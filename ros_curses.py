@@ -11,7 +11,7 @@ import argparse
 import curses
 
 # ros_curses modules
-from ros_curses.curses.display_manager import DisplayManager
+from ros_curses.display_manager import DisplayManager
 from ros_curses.ros.cg_parser import CGParser
 
 def main(stdscr):

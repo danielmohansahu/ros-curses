@@ -19,4 +19,4 @@ class CGParser:
     def connected(self):
         """ Check if we have an active ROS connection.
         """
-        return False
+        return True

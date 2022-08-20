@@ -12,15 +12,23 @@ import typing
 import curses
 
 # custom
-from .formatter import Formatter
+from .menus.base import Menu
+from .menus.main import MainMenu
 
 # global variables - hardcoded limits on screen size requirements
+# @TODO make these more than placeholders
 MIN_HEIGHT = 10
 MIN_WIDTH = 10
 
 class DisplayManager:
     """
     """
+
+    # all available menus
+    menus = {
+        "main" : MainMenu
+    }
+
     def __init__(self, stdscr, ros):
         # curses window interface
         self.stdscr = stdscr
@@ -28,8 +36,8 @@ class DisplayManager:
         # ros parser interface
         self.ros = ros
 
-        # string formatter
-        self.formatter = Formatter(stdscr)
+        # current menu item in focus
+        self.current_menu = None
 
         # curses initialization
         self.stdscr.clear()
@@ -43,16 +51,15 @@ class DisplayManager:
         self.stdscr.erase()
 
         # determine which display to show
-        msg = ""
         if not self._get_screen_metadata():
-            msg = self.formatter.display(self._display_too_small(), self.height, self.width)
+            self.stdscr.addstr(0, 0, self._display_too_small())
         elif not self.ros.connected():
-            # no ROS connection
-            msg = self.formatter.display(self._display_disconnect(), self.height, self.width)
+            self.stdscr.addstr(0, 0, self._display_disconnect())
         else:
-            # the real deal
-            msg = "TODO"
-        self.stdscr.addstr(0, 0, msg)
+            if not self.current_menu:
+                # first time initialization of 'main' menu
+                self.current_menu = self.menus["main"](self.stdscr, self.ros, self.menus)
+            self.current_menu.update(0, 0, self.height, self.width)
 
         # refresh the display
         self.stdscr.refresh()
