@@ -87,8 +87,14 @@ class NodesWindow:
 
         # display info for currently selected node
         self._displays["info"].write_line(0, f"Node '{current_node}' Summary:")
-
-
+        self._displays["info"].write_line(1, f"  Published Topics:")
+        info_idx = 2
+        if len(NODES.nodes[node].topics_published_full) == 0:
+            self._displays["info"].write_line(info_idx, f"    None :(")
+        else:
+            for topic in NODES.nodes[node].topics_published_full:
+                self._displays["info"].write_line(info_idx, f"    {topic}")
+                info_idx += 1
 
         # refresh displays
         for display in self._displays.values():

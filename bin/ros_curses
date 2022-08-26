@@ -10,17 +10,39 @@ import curses
 
 # ros_curses
 from ros_curses.windows.nodes_window import NodesWindow
+from ros_curses.windows.no_connection_window import NoConnectionWindow
+
+# @TODO per-ROS version handling via Abstract Classes
+from ros_curses.ros.ros1 import ROS1Interface as ROSInterface
+
+# exit message handling
+EXIT_MESSAGE = None
 
 # core program execution
 def main(stdscr):
     # set some non-default curses args
-    curses.curs_set(0)  # normally hide the cursor
+    curses.curs_set(0)      # normally hide the cursor
+    stdscr.keypad(True)     # top level window use keypad
+    stdscr.nodelay(True)    # top level window don't block
 
-    # start with the default window type
-    current_window = NodesWindow(stdscr).render()
+    # initialize ROS object
+    ros = ROSInterface()
 
     # periodically poll
     try:
+        # default initialization
+        current_window = NoConnectionWindow(stdscr).render()
+
+        # wait for a ROS connection
+        while not ros.connected():
+            # check if exit requested
+            if not current_window:
+                return
+            current_window = current_window.render()
+
+        # once we have a ROS connection proceed to more interesting windows
+        current_window = NodesWindow(stdscr).render()
+
         while True:
             # process latest rendering
             current_window = current_window.render()
@@ -36,7 +58,16 @@ def main(stdscr):
     except KeyboardInterrupt:
         # exit silently
         return
+    except curses.error:
+        # this is _probably_ a "screen too small"
+        global EXIT_MESSAGE
+        EXIT_MESSAGE = "Got curses error; this is usally caused by a terminal being too small..."
+        return
 
 if __name__ == "__main__":
     # curses initialization and graceful error handling
     curses.wrapper(main)
+
+    # print exit message, if set
+    if EXIT_MESSAGE is not None:
+        print(EXIT_MESSAGE)
