@@ -4,6 +4,7 @@
 # STL
 from typing import List, Dict
 import dataclasses
+from collections import UserDict
 
 @dataclasses.dataclass
 class ROSNodeData:
@@ -40,22 +41,8 @@ class ROSNodeData:
             if getattr(self, field.name) is None:
                 setattr(self, field.name, [])
 
-@dataclasses.dataclass
-class ROSNodesData:
-    """ Encapsulation of salient information for all available ROS Nodes
+class ROSNodesData(dict):
+    """ Encapsulation of ROSNode information.
+
+    @TODO decide if this should just be a normal dict...
     """
-
-    # nodes information
-    nodes: Dict[str, ROSNodeData] = None
-
-    def __post_init__(self):
-        # if no data was supplied, set to empty list
-        self.nodes = [] if self.nodes is None else self.nodes
-
-    # allow iteration over underlying data
-    def __iter__(self):
-        return self.nodes.__iter__()
-
-    # access length of underlying data
-    def __len__(self):
-        return self.nodes.__len__()

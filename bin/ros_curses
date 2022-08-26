@@ -40,12 +40,20 @@ def main(stdscr):
                 return
             current_window = current_window.render()
 
+        # initialize ROS graph
+        ros.update()
+
         # once we have a ROS connection proceed to more interesting windows
-        current_window = NodesWindow(stdscr).render()
+        current_window = NodesWindow(stdscr).render(ros)
 
         while True:
+            # update ROS connections
+            # @TODO display a warning or something if connection is lost
+            if ros.connected():
+                ros.update()
+
             # process latest rendering
-            current_window = current_window.render()
+            current_window = current_window.render(ros)
             
             # check if it's time to exit
             if current_window is None:
@@ -62,7 +70,7 @@ def main(stdscr):
         # this is _probably_ a "screen too small"
         global EXIT_MESSAGE
         EXIT_MESSAGE = "Got curses error; this is usally caused by a terminal being too small..."
-        return
+        raise
 
 if __name__ == "__main__":
     # curses initialization and graceful error handling

@@ -14,13 +14,13 @@ import curses
 from ros_curses.common.types import ROSNodeData, ROSNodesData
 from ros_curses.windows.window_formatter import WindowFormatter
 
-# hardcoded list of nodes for testing
-NODES = ROSNodesData({
-    "namespace1/node1": ROSNodeData("namespace1/node1"),
-    "/abs/ns/node2": ROSNodeData("/abs/ns/node2"),
-    "smol": ROSNodeData("smol"),
-    "an_eCTRELMELY_lrg NODE name with !c 3290  weird chars.": ROSNodeData("an_eCTRELMELY_lrg NODE name with !c 3290  weird chars.")
-})
+# # hardcoded list of nodes for testing
+# NODES = ROSNodesData({
+#     "namespace1/node1": ROSNodeData("namespace1/node1"),
+#     "/abs/ns/node2": ROSNodeData("/abs/ns/node2"),
+#     "smol": ROSNodeData("smol"),
+#     "an_eCTRELMELY_lrg NODE name with !c 3290  weird chars.": ROSNodeData("an_eCTRELMELY_lrg NODE name with !c 3290  weird chars.")
+# })
 
 class NodesWindow:
     def __init__(self, stdscr):
@@ -55,16 +55,19 @@ class NodesWindow:
         self._displays["list"].resize(rows, cols // 2, 0, 0)
         self._displays["info"].resize(rows, cols // 2, 0, cols // 2)
 
-    def render(self):
+    def render(self, ros):
         # render new window
 
         # resize, if necessary
         self.resize()
-        
+
+        # get dictionary of nodes
+        nodes = ros.nodes()
+
         # set topics
         self._displays["list"].write_line(0, "ROS Nodes:")
         current_node = ""
-        for idx, node in enumerate(NODES):
+        for idx, node in enumerate(nodes):
             if idx != self._highlighted_node_idx:
                 self._displays["list"].write_line(idx + 1, f"  {node}", False)
             else:
@@ -78,9 +81,9 @@ class NodesWindow:
             if user_input == ord('q'):
                 return None
             elif user_input == curses.KEY_UP:
-                self._highlighted_node_idx = (self._highlighted_node_idx - 1) % len(NODES)
+                self._highlighted_node_idx = (self._highlighted_node_idx - 1) % len(nodes)
             elif user_input == curses.KEY_DOWN:
-                self._highlighted_node_idx = (self._highlighted_node_idx + 1) % len(NODES)
+                self._highlighted_node_idx = (self._highlighted_node_idx + 1) % len(nodes)
             else:
                 # debugging
                 self._displays[self._active_display].write_line(-1, f"Got key {str(user_input)}")
@@ -89,10 +92,10 @@ class NodesWindow:
         self._displays["info"].write_line(0, f"Node '{current_node}' Summary:")
         self._displays["info"].write_line(1, f"  Published Topics:")
         info_idx = 2
-        if len(NODES.nodes[node].topics_published_full) == 0:
+        if len(nodes[node].topics_published_full) == 0:
             self._displays["info"].write_line(info_idx, f"    None :(")
         else:
-            for topic in NODES.nodes[node].topics_published_full:
+            for topic in nodes[node].topics_published_full:
                 self._displays["info"].write_line(info_idx, f"    {topic}")
                 info_idx += 1
 
