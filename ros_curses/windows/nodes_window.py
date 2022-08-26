@@ -11,7 +11,8 @@ currently detected in the computational graph.
 import curses
 
 # ros_curses
-from .window_formatter import WindowFormatter
+from ros_curses.common.types import ROSNodeData, ROSNodesData
+from ros_curses.windows.window_formatter import WindowFormatter
 
 # hardcoded list of nodes for testing
 NODES = ["node1","node2", "smol", "an_eCTRELMELY_lrg NODE name with !c 3290  weird chars."]
