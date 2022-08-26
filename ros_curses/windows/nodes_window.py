@@ -15,7 +15,12 @@ from ros_curses.common.types import ROSNodeData, ROSNodesData
 from ros_curses.windows.window_formatter import WindowFormatter
 
 # hardcoded list of nodes for testing
-NODES = ["node1","node2", "smol", "an_eCTRELMELY_lrg NODE name with !c 3290  weird chars."]
+NODES = ROSNodesData({
+    "namespace1/node1": ROSNodeData("namespace1/node1"),
+    "/abs/ns/node2": ROSNodeData("/abs/ns/node2"),
+    "smol": ROSNodeData("smol"),
+    "an_eCTRELMELY_lrg NODE name with !c 3290  weird chars.": ROSNodeData("an_eCTRELMELY_lrg NODE name with !c 3290  weird chars.")
+})
 
 class NodesWindow:
     def __init__(self, stdscr):
@@ -58,28 +63,35 @@ class NodesWindow:
         
         # set topics
         self._displays["list"].write_line(0, "ROS Nodes:")
+        current_node = ""
         for idx, node in enumerate(NODES):
-            self._displays["list"].write_line(idx + 1, f"  {node}", idx == self._highlighted_node_idx)
+            if idx != self._highlighted_node_idx:
+                self._displays["list"].write_line(idx + 1, f"  {node}", False)
+            else:
+                current_node = node
+                self._displays["list"].write_line(idx + 1, f"  {node}", True)
+
                 
         # get user input (and exit if requested)
         user_input = self._displays[self._active_display].getch()
         if user_input != curses.ERR:
             if user_input == ord('q'):
                 return None
-            # elif user_input == ord('\t'):
-            #     self._active_display = "list" if self._active_display == "info" else "info"
-            #     self._displays[self._active_display].addch(0, 0, user_input)
             elif user_input == curses.KEY_UP:
                 self._highlighted_node_idx = (self._highlighted_node_idx - 1) % len(NODES)
             elif user_input == curses.KEY_DOWN:
                 self._highlighted_node_idx = (self._highlighted_node_idx + 1) % len(NODES)
             else:
                 # debugging
-                self._displays[self._active_display].write_line(-1, str(user_input))
+                self._displays[self._active_display].write_line(-1, f"Got key {str(user_input)}")
+
+        # display info for currently selected node
+        self._displays["info"].write_line(0, f"Node '{current_node}' Summary:")
+
 
 
         # refresh displays
-        self._displays["list"].refresh()
-        self._displays["info"].refresh()
+        for display in self._displays.values():
+            display.refresh()
 
         return self
