@@ -9,12 +9,7 @@ import time
 import curses
 
 # ros_curses
-from windows.nodes_window import NodesWindow
-
-
-
-
-
+from ros_curses.windows.nodes_window import NodesWindow
 
 # core program execution
 def main(stdscr):
