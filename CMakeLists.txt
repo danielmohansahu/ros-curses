@@ -9,10 +9,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Curses REQUIRED COMPONENTS panels)
 
 # core ros-curses library
-add_library(${PROJECT_NAME} src/ros-curses.cpp)
-target_include_directories(${PROJECT_NAME} PRIVATE include)
+set(SRC_FILES
+  src/display.cpp
+  src/ros_curses.cpp
+)
+
+add_library(${PROJECT_NAME} ${SRC_FILES})
+target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)
+
+# demonstration executable for GUI testing
+set(DEMO_FILES
+  src/demo/demo_gui.cpp
+)
+add_executable(demo ${DEMO_FILES})
+target_link_libraries(demo ${PROJECT_NAME})
 
 # include tests
 add_subdirectory(tests)

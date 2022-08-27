@@ -1,8 +1,0 @@
-/*
- *
- *
- * 
- * 
- */
-
-#include "ros-curses.h"
