@@ -25,9 +25,10 @@ MESSAGE = string.Template(
 """)
 
 class NoConnectionWindow:
-    def __init__(self, stdscr):
+    def __init__(self, stdscr, ros):
         # one time initialization
         self.stdscr = stdscr
+        self.ros = ros
 
     def render(self):
         # get some debugging information

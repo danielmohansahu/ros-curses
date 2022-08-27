@@ -31,7 +31,7 @@ def main(stdscr):
     # periodically poll
     try:
         # default initialization
-        current_window = NoConnectionWindow(stdscr).render()
+        current_window = NoConnectionWindow(stdscr, ros).render()
 
         # wait for a ROS connection
         while not ros.connected():
@@ -44,16 +44,11 @@ def main(stdscr):
         ros.update()
 
         # once we have a ROS connection proceed to more interesting windows
-        current_window = NodesWindow(stdscr).render(ros)
+        current_window = NodesWindow(stdscr, ros).render()
 
         while True:
-            # update ROS connections
-            # @TODO display a warning or something if connection is lost
-            if ros.connected():
-                ros.update()
-
             # process latest rendering
-            current_window = current_window.render(ros)
+            current_window = current_window.render()
             
             # check if it's time to exit
             if current_window is None:

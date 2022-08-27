@@ -2,9 +2,10 @@
 """
 
 # STL
+import itertools
 from typing import List, Dict
 import dataclasses
-from collections import UserDict
+from collections import OrderedDict
 
 @dataclasses.dataclass
 class ROSNodeData:
@@ -27,22 +28,55 @@ class ROSNodeData:
     services_advertised: List[str] = None         # filtered advertised services (ignoring dynamic reconfigure, etc.)
 
     # parameters
-    params: List[str] = None  # parameters with a shared namespace; not perfect
+    parameters: List[str] = None    # parameters with a shared namespace; not perfect
 
     def __post_init__(self):
         """ Parse supplied initial data into components.
         """
         # update name metadata
-        name = self.fullname.split("/")[-1]
-        namespace = self.fullname.replace(name, "")
+        self.name = self.fullname.split("/")[-1]
+        self.namespace = self.fullname.replace(self.name, "")
 
         # populate defaults with empty lists
         for field in dataclasses.fields(ROSNodeData):
             if getattr(self, field.name) is None:
                 setattr(self, field.name, [])
 
+    def increment(self, item):
+        # @TODO
+        return item
+
+    def decrement(self, item):
+        # @TODO
+        return item
+
 class ROSNodesData(dict):
     """ Encapsulation of ROSNode information.
-
-    @TODO decide if this should just be a normal dict...
     """
+    def increment(self, item):
+        """ Convenience method to return the next item.
+        """
+        # handle edge cases gracefully - return first item or None
+        if item not in self:
+            return next(iter(self)) if len(self) != 0 else None
+        
+        # otherwise, iterate through our data structure and return next after match
+        keys = list(self.keys())
+        for i,key in enumerate(keys):
+            if key == item:
+                return keys[(i + 1) % len(self)]
+        assert (False), "Reached unreachable code block."
+
+    def decrement(self, item):
+        """ Convenience method to return the previous item.
+        """
+        # handle edge cases gracefully - return first item or None
+        if item not in self:
+            return next(iter(self)) if len(self) != 0 else None
+        
+        # otherwise, iterate through our data structure and return next after match
+        keys = list(self.keys())
+        for i,key in enumerate(keys):
+            if key == item:
+                return keys[(i - 1) % len(self)]
+        assert (False), "Reached unreachable code block."
