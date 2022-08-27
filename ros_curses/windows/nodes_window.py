@@ -10,6 +10,7 @@ import enum
 
 # curses
 import curses
+import curses.panel
 
 # ros_curses
 from ros_curses.common.types import ROSNodeData, ROSNodesData
@@ -23,7 +24,7 @@ class NodesWindow:
         """
         NONE = enum.auto()      # no action requested
         EXIT = enum.auto()      # exit immediately
-        HELP = enum.auto()      # display help panel
+        TOGGLE_HELP = enum.auto() # toggle help panel
         DECREMENT = enum.auto() # decrement selection in active display
         INCREMENT = enum.auto() # increment selection in active display
         SWITCH = enum.auto()    # switch active display
@@ -36,13 +37,19 @@ class NodesWindow:
         # initialize available sub-windows
         self._displays = {
             "list" : WindowFormatter(),
-            "info" : WindowFormatter()        
+            "info" : WindowFormatter(),
+            "help" : WindowFormatter(),
         }
 
         # set initial "state" variables - these track the user's current selected items
         self._active_display = active_display
         self._active_node = active_node
         self._active_info_item = None
+        self._show_help = False
+
+        # initialize a help panel, but keep it hidden
+        self._help_panel = curses.panel.new_panel(self._displays["help"]._window)
+        self._help_panel.hide()
 
         # resize (sets class variables)
         self.resize()
@@ -54,6 +61,7 @@ class NodesWindow:
         rows,cols = self.stdscr.getmaxyx()
         self._displays["list"].resize(rows, cols // 2, 0, 0, self._active_display == "list")
         self._displays["info"].resize(rows, cols // 2, 0, cols // 2, self._active_display == "info")
+        self._displays["help"].resize(rows // 2, cols // 2, rows // 4, cols // 4, True)
 
     def render(self):
         """ Main polling API - rerender window.
@@ -72,9 +80,13 @@ class NodesWindow:
         action = self._process_user_input()
         if action == self.Action.EXIT:
             return None
-        elif action == self.Action.HELP:
-            # @TODO
-            ...
+        elif action == self.Action.TOGGLE_HELP:
+            self._show_help = not self._show_help
+            if self._show_help:
+                self._help_panel.show()
+            else:
+                self._help_panel.hide()
+                self._displays["help"].clear()
         elif action == self.Action.DECREMENT:
             # perform switching logic based on current display
             if self._active_display == "list":
@@ -91,15 +103,20 @@ class NodesWindow:
             self._active_display = "info" if self._active_display == "list" else "list"
             redraw = True
 
-        # draw "list" window
+        # render windows
         self._render_list_window(nodes)
-
-        # draw "info" window
         self._render_info_window(nodes)
 
-        # refresh and return
-        for display in self._displays.values():
+        if self._help_panel:
+            # superimpose the help panel
+            self._render_help_panel()
+
+        # always refresh all panels (to write current state)
+        for ident,display in self._displays.items():
+            if ident == "help" and not self._show_help:
+                continue
             display.refresh()
+
         return self
 
     def _process_user_input(self):
@@ -107,7 +124,7 @@ class NodesWindow:
         user_input = self._displays[self._active_display].getch()
         if user_input != curses.ERR:
             if user_input == ord('?'):
-                return self.Action.HELP
+                return self.Action.TOGGLE_HELP
             elif user_input == ord('\t'):
                 return self.Action.SWITCH
             elif user_input == curses.KEY_UP:
@@ -186,3 +203,18 @@ class NodesWindow:
         else:
             for param in node_data.parameters:
                 idx = self._displays["info"].write_line(idx, f"    {param}")
+
+    def _render_help_panel(self):
+        # show available commands
+
+        # current row index
+        idx = 0
+
+        idx = self._displays["help"].write_line(idx, "Available Commands:")
+        idx = self._displays["help"].write_line(idx, "")
+        idx = self._displays["help"].write_line(idx, "   ? : toggle help menu")
+        idx = self._displays["help"].write_line(idx, "   q : exit program")
+        idx = self._displays["help"].write_line(idx, "   ↑ : navigate selection")
+        idx = self._displays["help"].write_line(idx, "   ↓ : navigate selection")
+        idx = self._displays["help"].write_line(idx, " TAB : switch active window")
+        idx = self._displays["help"].write_line(idx, "")
