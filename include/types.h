@@ -19,7 +19,7 @@ enum Action
 
 /* String representation of a single line, with formatting information.
  */
-class LineDatum
+struct LineDatum
 {
   const std::string text;
   const uint8_t indentations;
