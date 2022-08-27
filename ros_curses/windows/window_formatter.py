@@ -77,7 +77,15 @@ class WindowFormatter:
         Returns:
             idx: The next row index, for convenience
         """
-        idx = row
+        try:
+            self._write_line(row, string, highlight)
+        except curses.error:
+            # don't cause a ruckus; probably a race condition with window resizing
+            pass
+        return row + 1
+
+    def _write_line(self, row, string, highlight = False):
+        # implementation for core line writing
 
         # handle wrapping indices (-1, -2)
         max_rows, max_cols = self.size()
@@ -86,21 +94,20 @@ class WindowFormatter:
 
         # don't do anything if this is outside our display bounds
         if 0 > row > max_rows:
-            return idx
+            return
 
         # add a string to the given row
         self._window.addnstr(row + 1, 1, string, max_cols)
 
-        # padd with whitespace, if necessary
+        # pad with whitespace, if necessary
         if len(string) < max_cols:
             self._window.addnstr(row + 1, 1 + len(string), " " * (max_cols - len(string)), max_cols)
 
+        # if highlighting is requested make this line standout
         if highlight:
             col = next(idx for idx,c in enumerate(string) if not c.isspace())
             length = min(len(string), max_cols) - col
             self._window.chgat(row + 1, col + 1, length, curses.A_STANDOUT)
-        
-        return idx + 1
 
     def __getattr__(self, attr):
         """ Allow direct access to curses.Window class for undefined methods.

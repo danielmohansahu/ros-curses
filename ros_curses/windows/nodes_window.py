@@ -155,7 +155,7 @@ class NodesWindow:
         # display publications information
         idx = self._displays["info"].write_line(idx, f"Publications:")
         if len(node_data.topics_published_full) == 0:
-            idx = self._displays["info"].write_line(idx, f"  None")
+            idx = self._displays["info"].write_line(idx, f"    None")
         else:
             for topic in node_data.topics_published_full:
                 idx = self._displays["info"].write_line(idx, f"    {topic}")
@@ -164,7 +164,7 @@ class NodesWindow:
         # display publications information
         idx = self._displays["info"].write_line(idx, f"Subscriptions:")
         if len(node_data.topics_subscribed_full) == 0:
-            idx = self._displays["info"].write_line(idx, f"  None")
+            idx = self._displays["info"].write_line(idx, f"    None")
         else:
             for topic in node_data.topics_subscribed_full:
                 idx = self._displays["info"].write_line(idx, f"    {topic}")
@@ -173,7 +173,7 @@ class NodesWindow:
         # display services information
         idx = self._displays["info"].write_line(idx, f"Services:")
         if len(node_data.services_advertised_full) == 0:
-            idx = self._displays["info"].write_line(idx, f"  None")
+            idx = self._displays["info"].write_line(idx, f"    None")
         else:
             for service in node_data.services_advertised_full:
                 idx = self._displays["info"].write_line(idx, f"    {service}")
@@ -182,7 +182,7 @@ class NodesWindow:
         # display parameter information
         idx = self._displays["info"].write_line(idx, f"Parameters in Namespace:")
         if len(node_data.parameters) == 0:
-            idx = self._displays["info"].write_line(idx, f"  None")
+            idx = self._displays["info"].write_line(idx, f"    None")
         else:
             for param in node_data.parameters:
                 idx = self._displays["info"].write_line(idx, f"    {param}")
