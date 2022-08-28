@@ -17,7 +17,6 @@
 
 // ros_curses
 #include "types.h"
-#include "updater.h"
 
 namespace curses
 {
@@ -91,9 +90,6 @@ class Display
   // all available panels
   std::unordered_map<PanelNames, Panel> _panels;
 
-  // interface used to update the display on active panels
-  std::shared_ptr<ros_curses::Updater> _updater; 
-
   // currently active window (user selected)
   PanelNames _active {PanelNames::INITIALIZATION};
   PanelNames _last_active {_active};
@@ -106,7 +102,7 @@ class Display
   std::string _header_status {""};
 
  public:
-  Display(const std::shared_ptr<ros_curses::Updater>& updater);
+  Display();
   ~Display();
 
   /* Switch to the target active display, optionally hiding the previous display.

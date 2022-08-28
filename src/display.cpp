@@ -70,8 +70,7 @@ void Panel::write(const std::vector<ros_curses::LineDatum>& lines)
 }
 
 
-Display::Display(const std::shared_ptr<ros_curses::Updater>& updater)
- : _updater(updater)
+Display::Display()
 {
   // curses initialization
   initscr();              // initialize screens
