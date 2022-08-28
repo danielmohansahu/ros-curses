@@ -33,6 +33,12 @@ class Panel
   // core curses panel object underlying this class
   PANEL* _panel;
 
+  // boolean indicating if we're active or not
+  bool _active {false};
+
+  // completely redraw this panel, clearing all information
+  void redraw();
+
  public:
   // constructors
   Panel() : Panel(0, 0, 0, 0) {};
@@ -44,9 +50,17 @@ class Panel
    */
   void set_active();
 
+  /* Indicate that we're inactive.
+   */
+  void set_inactive();
+
   /* Write the given data to our panel.
    */
   void write(const std::vector<ros_curses::LineDatum>& lines);
+
+  /* Resize to the given dimensions and move to the given location.
+   */
+  void move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x);
 
   /************************* Panels Pass-through API *************************/
 
@@ -66,7 +80,12 @@ class Panel
 
   /* Add a string to the given line (mostly for debugging)
    */
-  void add_str(size_t y, size_t x, const std::string& str) { mvwaddstr(_window, y, x, str.c_str()); }
+  void debug(const std::string& str)
+  {
+    [[maybe_unused]] int minx, maxy, miny, maxx;
+    getbegyx(_window, miny, minx); getmaxyx(_window, maxy, maxx);
+    mvwaddstr(_window, maxy - 2, minx + 1, str.c_str());
+  }
 
 }; // class Panel
 
@@ -88,6 +107,11 @@ class Display
   // currently active window (user selected)
   PanelNames _active {PanelNames::INITIALIZATION};
 
+  // miscellaneous formatting data
+  static const inline uint8_t HEADER_ROWS {2};
+  static const inline uint8_t HELP_COLS {100};
+  std::string _header_status {""};
+
  public:
   Display(const std::shared_ptr<ros_curses::Updater>& updater);
   ~Display();
@@ -95,6 +119,10 @@ class Display
   /* Process user input, returning the desired action if not applicable to visualization.
    */
   Action process_user_input();
+
+  /* Update header, including a status message.
+   */
+  void update_header(const std::string& status = "");
 
  private:
   /* Handle a window resize event.
