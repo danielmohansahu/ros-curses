@@ -28,10 +28,15 @@ class ComputationalGraph
    */
   struct Topic
   {
+    const std::string name;
     std::string type;
     std::set<std::shared_ptr<Node>> publishers;
     std::set<std::shared_ptr<Node>> subscribers;
     bool active {true};
+
+    // construction by name only
+    Topic() = delete;
+    explicit Topic(const std::string& name_) : name(name_) {}
 
     // merge in another Topic's information
     void merge(const Topic& other)
@@ -48,9 +53,14 @@ class ComputationalGraph
    */
   struct Service
   {
+    const std::string name;
     std::string type;
     std::set<std::shared_ptr<Node>> advertisers;
     bool active {true};
+
+    // construction by name only
+    Service() = delete;
+    explicit Service(const std::string& name_) : name(name_) {}
 
     // merge in another Service's information
     void merge(const Service& other)
@@ -66,6 +76,7 @@ class ComputationalGraph
    */
   struct Param
   {
+    std::string name;
     std::string namespace_;
     std::string type;
     bool dynamic {false};
@@ -76,11 +87,16 @@ class ComputationalGraph
    */
   struct Node
   {
+    const std::string name;
     std::string namespace_;
     std::set<std::shared_ptr<Topic>> publications;
     std::set<std::shared_ptr<Topic>> subscriptions;
     std::set<std::shared_ptr<Service>> services;
     bool active {true};
+
+    // construction by name only
+    Node() = delete;
+    explicit Node(const std::string& name_) : name(name_) {}
 
     // merge in another Service's information
     void merge(const Node& other)

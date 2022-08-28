@@ -131,7 +131,7 @@ ros_curses::Action Display::process(const std::optional<ros_curses::Computationa
   //     _panels.at(key).write(data);
 
   // perform updates for screens handle internally
-  update_header( !graph ? "disconnected..." : _header_status );
+  update_header( !graph ? "disconnected..." : "connected" );
   update_help_panel();
 
   // process user input

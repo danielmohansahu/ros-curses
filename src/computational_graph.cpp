@@ -18,7 +18,13 @@ ComputationalGraph::ComputationalGraph(const std::vector<std::pair<std::string, 
   for (const auto& [topic, publishers] : publications)
     for (const auto& publisher : publishers)
     {
-      _nodes[publisher]->publications.insert(_topics[topic]);
+      // construct node / topic if not yet present
+      if (_nodes.find(publisher) == _nodes.end())
+        _nodes[publisher] = std::make_shared<Node>(publisher);
+      if (_topics.find(topic) == _topics.end())
+        _topics[topic] = std::make_shared<Topic>(topic);
+
+      _nodes.at(publisher)->publications.insert(_topics.at(topic));
       _topics.at(topic)->publishers.insert(_nodes.at(publisher));
     }
 
@@ -26,7 +32,13 @@ ComputationalGraph::ComputationalGraph(const std::vector<std::pair<std::string, 
   for (const auto& [topic, subscribers] : publications)
     for (const auto& subscriber : subscribers)
     {
-      _nodes[subscriber]->subscriptions.insert(_topics[topic]);
+      // construct node / topic if not yet present
+      if (_nodes.find(subscriber) == _nodes.end())
+        _nodes[subscriber] = std::make_shared<Node>(subscriber);
+      if (_topics.find(topic) == _topics.end())
+        _topics[topic] = std::make_shared<Topic>(topic);
+
+      _nodes.at(subscriber)->subscriptions.insert(_topics.at(topic));
       _topics.at(topic)->subscribers.insert(_nodes.at(subscriber));
     }
 
@@ -34,7 +46,13 @@ ComputationalGraph::ComputationalGraph(const std::vector<std::pair<std::string, 
   for (const auto& [service, advertisers] : services)
     for (const auto& advertiser : advertisers)
     {
-      _nodes[advertiser]->services.insert(_services[service]);
+      // construct node / topic if not yet present
+      if (_nodes.find(advertiser) == _nodes.end())
+        _nodes[advertiser] = std::make_shared<Node>(advertiser);
+      if (_services.find(service) == _services.end())
+        _services[service] = std::make_shared<Service>(service);
+
+      _nodes.at(advertiser)->services.insert(_services.at(service));
       _services.at(service)->advertisers.insert(_nodes.at(advertiser));
     }
 }
