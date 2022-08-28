@@ -68,7 +68,7 @@ class MockUpdater : public ros_curses::Updater
     // https://stackoverflow.com/a/12468109/2460835
     auto randchar = []() -> char
     {
-        const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
+        const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                                        ";
         const size_t max_index = (sizeof(charset) - 1);
         return charset[ rand() % max_index ];
     };

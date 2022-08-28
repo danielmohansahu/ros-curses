@@ -36,6 +36,7 @@ class Panel
  public:
   // no default constructor
   Panel() = delete;
+  Panel(size_t rows, size_t cols, size_t origin_y, size_t origin_x);
 
   /****************************** Core Panel API *****************************/
 

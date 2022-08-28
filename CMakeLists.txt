@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # find curses
-find_package(Curses REQUIRED COMPONENTS panels)
+find_package(Curses REQUIRED COMPONENTS)
+find_library(CURSES_PANELS_LIBRARIES libpanel.so libpanelw.so HINTS ${NCURSES_LIBDIR} REQUIRED)
 
 # core ros-curses library
 set(SRC_FILES
@@ -16,7 +17,7 @@ set(SRC_FILES
 
 add_library(${PROJECT_NAME} ${SRC_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC include)
-target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES} ${CURSES_PANELS_LIBRARIES})
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)
 
 # demonstration executable for GUI testing
