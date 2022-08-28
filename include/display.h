@@ -100,7 +100,7 @@ class Display
 
   // miscellaneous formatting data
   static const inline uint8_t HEADER_ROWS {3};
-  static const inline uint8_t HELP_COLS {100};
+  static const inline uint8_t HELP_COLS {50};
 
   // miscellaneous cached information (should be minimal...)
   std::string _header_status {""};
@@ -113,15 +113,20 @@ class Display
    */
   void activate(const PanelNames panel, const bool hide = false);
 
-  /* Process user input, returning the desired action if not applicable to visualization.
+  /* Core polling method; called every loop with updates.
    */
-  Action process_user_input();
+  ros_curses::Action process(const std::unordered_map<ros_curses::PanelNames,std::vector<ros_curses::LineDatum>>& updates);
 
   /* Update header, including a status message.
    */
   void update_header(const std::string& status = "");
 
  private:
+
+  /* Process user input, returning the desired action if not applicable to visualization.
+   */
+  Action process_user_input();
+
   /* Cycle through active displays.
    */
   void cycle_displays(const bool reverse = false);
@@ -133,6 +138,10 @@ class Display
   /* Handle a window resize event.
    */
   void resize();
+
+  /* Write help screen information.
+   */
+  void update_help_panel();
 
 }; // class Display
 

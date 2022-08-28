@@ -81,6 +81,9 @@ class MockUpdater : public ros_curses::Updater
 
 int main(int argv, char** argc)
 {
+  using PanelNames = ros_curses::PanelNames;
+  using LineDatum = ros_curses::LineDatum;
+
   // construct mock updater
   auto updater = std::make_shared<MockUpdater>();
 
@@ -88,9 +91,13 @@ int main(int argv, char** argc)
   auto display = curses::Display(updater);
 
   // activate display
-  display.activate(ros_curses::PanelNames::NODELIST);
+  display.activate(PanelNames::NODELIST);
+
+  // make a dummy empty data payload
+  //  @todo generate randomly
+  std::unordered_map<PanelNames,std::vector<LineDatum>> dummy_payload {};
 
   // process until shutdown
-  while (display.process_user_input() != ros_curses::Action::EXIT)
+  while (display.process(dummy_payload) != ros_curses::Action::EXIT)
     usleep(10000);
 }

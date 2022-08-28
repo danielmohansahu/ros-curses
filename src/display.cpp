@@ -61,6 +61,15 @@ void Panel::move_and_resize(const size_t rows, const size_t cols, const size_t y
   redraw();
 }
 
+void Panel::write(const std::vector<ros_curses::LineDatum>& lines)
+{
+  // write the given data directly to our screen
+  //  @TODO handle formatting
+  for (size_t i = 0; i != lines.size(); ++i)
+    mvwaddstr(_window, i + 1, 1, lines[i].text.c_str());
+}
+
+
 Display::Display(const std::shared_ptr<ros_curses::Updater>& updater)
  : _updater(updater)
 {
@@ -113,6 +122,30 @@ void Display::activate(const PanelNames panel, bool hide)
   _panels.at(_active).set_active();
 }
 
+ros_curses::Action Display::process(const std::unordered_map<ros_curses::PanelNames,std::vector<ros_curses::LineDatum>>& updates)
+{
+  // core method to be called every loop
+
+  // perform updates for screens handle internally
+  update_header();
+  update_help_panel();
+
+  // process incoming data
+  for (const auto& [key, data] : updates)
+    _panels.at(key).write(data);
+
+  // process user input
+  const Action action = process_user_input();
+
+  // perform refresh of all windows / panels
+  refresh();
+  update_panels();
+  doupdate();
+
+  // return action
+  return action;
+}
+
 ros_curses::Action Display::process_user_input()
 {
   // initialize action to be NONE
@@ -137,28 +170,20 @@ ros_curses::Action Display::process_user_input()
     case KEY_RIGHT:     // move selection right
       switch_displays();
       break;
-    case int('q'):      // user requested exit
-      return Action::EXIT;
-      break;
-    case int('\t'):     // tab between panel display options
-      cycle_displays();
-      break;
+    case int('q'):      // user requested we exit the current screen
+      if (_active != PanelNames::HELP)
+        return Action::EXIT;
     case int('h'):      // toggle help screen
     case int('?'):      // toggle help screen
       (_active != PanelNames::HELP) ? activate(PanelNames::HELP) : activate(_last_active, true);
+      break;
+    case int('\t'):     // tab between panel display options
+      cycle_displays();
       break;
     default:
       _panels.at(_active).debug("Unknown command: " + std::to_string(ch));
       break;
   }
-
-  // update desired output (internal representations)
-  update_header();
-
-  // perform refresh of all windows / panels
-  refresh();
-  update_panels();
-  doupdate();
 
   // indicate that no user action is required.
   return action;
@@ -243,6 +268,23 @@ void Display::resize()
   _panels.at(PanelNames::TOPICINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
   _panels.at(PanelNames::SERVICEINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
   _panels.at(PanelNames::PARAMINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+}
+
+void Display::update_help_panel()
+{
+  // hardcoded information for the help window
+  std::vector<ros_curses::LineDatum> message;
+  message.emplace_back("ros-curses help");
+  message.emplace_back("       UP : move cursor up");
+  message.emplace_back("     DOWN : move cursor down");
+  message.emplace_back("     LEFT : switch active display");
+  message.emplace_back("    RIGHT : switch active display");
+  message.emplace_back("      TAB : cycle panels");
+  message.emplace_back("     h, ? : toggle help menu");
+  message.emplace_back("        q : quit / exit");
+
+  // write message
+  _panels.at(PanelNames::HELP).write(message);
 }
 
 } // namespace ros_curses
