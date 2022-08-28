@@ -11,6 +11,24 @@
 namespace ros_curses
 {
 
+/* Enumeration of all available panels.
+ */
+enum PanelNames
+{
+  INITIALIZATION,
+  HELP,
+  NODELIST,
+  NODEINFO,
+  TOPICLIST,
+  TOPICINFO,
+  SERVICELIST,
+  SERVICEINFO,
+  PARAMLIST,
+  PARAMINFO
+}; // enum PanelNames
+
+/* Enumeration of all possible actions requested by users.
+ */
 enum Action
 {
   NONE,
@@ -33,4 +51,4 @@ struct LineDatum
 
 }; // class LineDatum
 
-}; // namespace ros_curses
+} // namespace ros_curses

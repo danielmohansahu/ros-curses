@@ -29,4 +29,4 @@ class Updater
   virtual std::optional<std::vector<LineDatum>> update(const std::string& panel) = 0;
 };
 
-}; // namespace ros_curses
+} // namespace ros_curses

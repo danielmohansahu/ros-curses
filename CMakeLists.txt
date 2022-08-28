@@ -18,7 +18,7 @@ set(SRC_FILES
 add_library(${PROJECT_NAME} ${SRC_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES} ${CURSES_PANELS_LIBRARIES})
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -Wpedantic)
 
 # demonstration executable for GUI testing
 set(DEMO_FILES
