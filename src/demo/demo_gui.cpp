@@ -34,6 +34,6 @@ int main(int argv, char** argc)
   std::unordered_map<PanelNames,std::vector<LineDatum>> dummy_payload {};
 
   // process until shutdown
-  while (display.process(dummy_payload) != ros_curses::Action::EXIT)
+  while (display.process(mock.poll()) != ros_curses::Action::EXIT)
     usleep(10000);
 }

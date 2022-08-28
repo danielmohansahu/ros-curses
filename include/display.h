@@ -10,6 +10,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <optional>
 
 // curses
 #include <curses.h>
@@ -17,6 +18,7 @@
 
 // ros_curses
 #include "types.h"
+#include "computational_graph.h"
 
 namespace curses
 {
@@ -86,6 +88,7 @@ class Display
   // convenience typedefs
   using Action = ros_curses::Action;
   using PanelNames = ros_curses::PanelNames;
+  using ComputationalGraph = ros_curses::ComputationalGraph;
 
   // all available panels
   std::unordered_map<PanelNames, Panel> _panels;
@@ -111,7 +114,7 @@ class Display
 
   /* Core polling method; called every loop with updates.
    */
-  ros_curses::Action process(const std::unordered_map<ros_curses::PanelNames,std::vector<ros_curses::LineDatum>>& updates);
+  ros_curses::Action process(const std::optional<ComputationalGraph>& graph);
 
   /* Update header, including a status message.
    */

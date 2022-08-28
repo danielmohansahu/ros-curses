@@ -121,17 +121,18 @@ void Display::activate(const PanelNames panel, bool hide)
   _panels.at(_active).set_active();
 }
 
-ros_curses::Action Display::process(const std::unordered_map<ros_curses::PanelNames,std::vector<ros_curses::LineDatum>>& updates)
+ros_curses::Action Display::process(const std::optional<ros_curses::ComputationalGraph>& graph)
 {
   // core method to be called every loop
+  
+  // process incoming data, if there's anything
+  // if (graph)
+  //   for (const auto& [key, data] : *graph)
+  //     _panels.at(key).write(data);
 
   // perform updates for screens handle internally
-  update_header();
+  update_header( !graph ? "disconnected..." : _header_status );
   update_help_panel();
-
-  // process incoming data
-  for (const auto& [key, data] : updates)
-    _panels.at(key).write(data);
 
   // process user input
   const Action action = process_user_input();
