@@ -16,9 +16,10 @@ Panel::Panel(size_t rows, size_t cols, size_t origin_y, size_t origin_x)
   keypad(_window, true);
   nodelay(_window, true);
   scrollok(_window, true);
+  leaveok(_window, true);
 
-  // start hiddine
-  hide();
+  // make sure we're not hidden, although we may be superseded
+  show_panel(_panel);
 }
 
 void Panel::redraw()
@@ -37,11 +38,15 @@ void Panel::redraw()
 void Panel::set_active()
 {
   _active = true;
+  top_panel(_panel);
+  wmove(_window, 0, 0);
   redraw();
 }
 
-void Panel::set_inactive()
+void Panel::set_inactive(const bool hide)
 {
+  if (hide)
+    hide_panel(_panel);
   // clear contents
   _active = false;
   redraw();
@@ -67,6 +72,7 @@ Display::Display(const std::shared_ptr<ros_curses::Updater>& updater)
   keypad(stdscr, true);   // properly interpret keypad / arrow keys
   nodelay(stdscr, true);  // don't block on calls for user input
   curs_set(0);            // don't show the cursor
+  leaveok(stdscr, true);  // don't move the cursor unless explicitly told
 
   // instantiate panels via std::unordered_map's autoconstruction
   _panels[PanelNames::INITIALIZATION];
@@ -84,8 +90,7 @@ Display::Display(const std::shared_ptr<ros_curses::Updater>& updater)
   resize();
 
   // start with only the INITIALIZATION screen active
-  _panels.at(_active).set_active();
-  _panels.at(_active).show();
+  activate(PanelNames::INITIALIZATION);
 
   // add header information
   update_header("initializing...");
@@ -95,6 +100,17 @@ Display::~Display()
 {
   // curses shutdown
   endwin();
+}
+
+void Display::activate(const PanelNames panel, bool hide)
+{
+  // save last state to support toggling
+  _last_active = _active;
+  _active = panel;
+
+  // set states of appropriate panels
+  _panels.at(_last_active).set_inactive(hide);
+  _panels.at(_active).set_active();
 }
 
 ros_curses::Action Display::process_user_input()
@@ -128,14 +144,19 @@ ros_curses::Action Display::process_user_input()
       break;
     case int('h'):      // toggle help screen
     case int('?'):      // toggle help screen
-      // @TODO
+      (_active != PanelNames::HELP) ? activate(PanelNames::HELP) : activate(_last_active, true);
       break;
     default:
       _panels.at(_active).debug("Unknown command: " + std::to_string(ch));
       break;
   }
 
-  // perform refresh
+  // update desired output (internal representations)
+  update_header();
+
+  // perform refresh of all windows / panels
+  refresh();
+  update_panels();
   doupdate();
 
   // indicate that no user action is required.
@@ -151,7 +172,6 @@ void Display::update_header(const std::string& status)
   // use the stdscr for all our header information
   mvaddstr(0, 0, "ros-curses: Command line introspection of the ROS computational graph.");
   mvprintw(1, 0, "  Status: %s", _header_status.c_str());
-  refresh();
 }
 
 
@@ -168,22 +188,16 @@ void Display::resize()
   _panels.at(PanelNames::HELP).move_and_resize(4 * rows / 5, HELP_COLS, rows / 10, (cols - HELP_COLS) / 2);
 
   // list displays get the left half of the screen
-  _panels.at(PanelNames::NODELIST).move_and_resize(HEADER_ROWS, 0, rows - HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::TOPICLIST).move_and_resize(HEADER_ROWS, 0, rows - HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::SERVICELIST).move_and_resize(HEADER_ROWS, 0, rows - HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::PARAMLIST).move_and_resize(HEADER_ROWS, 0, rows - HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::NODELIST).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
+  _panels.at(PanelNames::TOPICLIST).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
+  _panels.at(PanelNames::SERVICELIST).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
+  _panels.at(PanelNames::PARAMLIST).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
 
   // info displays get the right half of the screen
-  _panels.at(PanelNames::NODEINFO).move_and_resize(HEADER_ROWS, cols / 2, rows - HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::TOPICINFO).move_and_resize(HEADER_ROWS, cols / 2, rows - HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::SERVICEINFO).move_and_resize(HEADER_ROWS, cols / 2, rows - HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::PARAMINFO).move_and_resize(HEADER_ROWS, cols / 2, rows - HEADER_ROWS, cols / 2);
-
-  // tell all panels to refresh
-  update_panels();
-
-  // also redraw header
-  update_header();
+  _panels.at(PanelNames::NODEINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::TOPICINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::SERVICEINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::PARAMINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
 }
 
 } // namespace ros_curses

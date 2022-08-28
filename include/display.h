@@ -50,9 +50,9 @@ class Panel
    */
   void set_active();
 
-  /* Indicate that we're inactive.
+  /* Indicate that we're inactive, optionally completely hiding.
    */
-  void set_inactive();
+  void set_inactive(const bool hide);
 
   /* Write the given data to our panel.
    */
@@ -61,16 +61,6 @@ class Panel
   /* Resize to the given dimensions and move to the given location.
    */
   void move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x);
-
-  /************************* Panels Pass-through API *************************/
-
-  /* Move this panel to the bottom of the stack.
-   */
-  void hide() { hide_panel(_panel); };
-
-  /* Move this panel to the top of the stack.
-   */
-  void show() { show_panel(_panel); };
 
   /************************* Window Pass-through API *************************/
 
@@ -106,15 +96,20 @@ class Display
 
   // currently active window (user selected)
   PanelNames _active {PanelNames::INITIALIZATION};
+  PanelNames _last_active {_active};
 
   // miscellaneous formatting data
-  static const inline uint8_t HEADER_ROWS {2};
+  static const inline uint8_t HEADER_ROWS {3};
   static const inline uint8_t HELP_COLS {100};
   std::string _header_status {""};
 
  public:
   Display(const std::shared_ptr<ros_curses::Updater>& updater);
   ~Display();
+
+  /* Switch to the target active display, optionally hiding the previous display.
+   */
+  void activate(const PanelNames panel, const bool hide = false);
 
   /* Process user input, returning the desired action if not applicable to visualization.
    */
