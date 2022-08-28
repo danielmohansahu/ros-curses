@@ -58,7 +58,7 @@ class MockGraphParser
       _connected = !_connected;
       _connection_change_prob = 0.0;
     }
-    _connection_change_prob += 0.001;
+    _connection_change_prob += 0.00001;
     return _connected;
   }
 
@@ -76,12 +76,21 @@ class MockGraphParser
       // looks like we got a change! update the graph
 
       // random deletions of topics / services
-      for (size_t i = 0; i != _publications.size(); ++i)
-        if (random_bool(0.05)) _publications.erase(_publications.begin() + i);
-      for (size_t i = 0; i != _subscriptions.size(); ++i)
-        if (random_bool(0.05)) _subscriptions.erase(_subscriptions.begin() + i);
-      for (size_t i = 0; i != _services.size(); ++i)
-        if (random_bool(0.05)) _services.erase(_services.begin() + i);
+      for (auto it = _publications.begin(); it != _publications.end();)
+        if (random_bool(0.05))
+          it = _publications.erase(it);
+        else
+          ++it;
+      for (auto it = _subscriptions.begin(); it != _subscriptions.end();)
+        if (random_bool(0.05))
+          it = _subscriptions.erase(it);
+        else
+          ++it;
+      for (auto it = _services.begin(); it != _services.end();)
+        if (random_bool(0.05))
+          _services.erase(it);
+        else
+          ++it;
 
       // random additions of topics / services
       if (random_bool(0.1))
