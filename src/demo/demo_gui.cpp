@@ -87,6 +87,9 @@ int main(int argv, char** argc)
   // construct basic display class
   auto display = curses::Display(updater);
 
+  // activate display
+  display.activate(ros_curses::PanelNames::NODELIST);
+
   // process until shutdown
   while (display.process_user_input() != ros_curses::Action::EXIT)
     usleep(10000);

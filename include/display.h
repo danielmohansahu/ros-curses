@@ -101,6 +101,8 @@ class Display
   // miscellaneous formatting data
   static const inline uint8_t HEADER_ROWS {3};
   static const inline uint8_t HELP_COLS {100};
+
+  // miscellaneous cached information (should be minimal...)
   std::string _header_status {""};
 
  public:
@@ -120,6 +122,14 @@ class Display
   void update_header(const std::string& status = "");
 
  private:
+  /* Cycle through active displays.
+   */
+  void cycle_displays(const bool reverse = false);
+
+  /* Switch between left and right hand active panels.
+   */
+  void switch_displays();
+
   /* Handle a window resize event.
    */
   void resize();

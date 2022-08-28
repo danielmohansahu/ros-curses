@@ -32,7 +32,9 @@ enum PanelNames
 enum Action
 {
   NONE,
-  EXIT
+  EXIT,
+  INCREMENT,
+  DECREMENT
 }; // enum Action
 
 /* String representation of a single line, with formatting information.

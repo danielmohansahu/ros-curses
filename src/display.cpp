@@ -115,6 +115,9 @@ void Display::activate(const PanelNames panel, bool hide)
 
 ros_curses::Action Display::process_user_input()
 {
+  // initialize action to be NONE
+  Action action = Action::NONE;
+
   // handle user input in active display
   const int ch = _panels.at(_active).get_ch();
   switch (ch)
@@ -125,22 +128,20 @@ ros_curses::Action Display::process_user_input()
       resize();
       break;
     case KEY_UP:        // move selection up
-      // @TODO
+      action = Action::DECREMENT;
       break;
     case KEY_DOWN:      // move selection down
-      // @TODO
+      action = Action::INCREMENT;
       break;
     case KEY_LEFT:      // move selection left
-      // @TODO
-      break;
     case KEY_RIGHT:     // move selection right
-      // @TODO
+      switch_displays();
       break;
     case int('q'):      // user requested exit
       return Action::EXIT;
       break;
     case int('\t'):     // tab between panel display options
-      // @TODO
+      cycle_displays();
       break;
     case int('h'):      // toggle help screen
     case int('?'):      // toggle help screen
@@ -160,7 +161,7 @@ ros_curses::Action Display::process_user_input()
   doupdate();
 
   // indicate that no user action is required.
-  return Action::NONE;
+  return action;
 }
 
 void Display::update_header(const std::string& status)
@@ -172,8 +173,52 @@ void Display::update_header(const std::string& status)
   // use the stdscr for all our header information
   mvaddstr(0, 0, "ros-curses: Command line introspection of the ROS computational graph.");
   mvprintw(1, 0, "  Status: %s", _header_status.c_str());
+  mvprintw(2, 0, "  Active: %u", _active);
 }
 
+void Display::cycle_displays(const bool reverse)
+{
+  // cycle through displays
+  switch (_active)
+  {
+    case PanelNames::NODELIST:
+    case PanelNames::NODEINFO:
+      (reverse) ? activate(PanelNames::PARAMLIST) : activate(PanelNames::TOPICLIST);
+      break;
+    case PanelNames::TOPICLIST:
+    case PanelNames::TOPICINFO:
+      (reverse) ? activate(PanelNames::NODELIST) : activate(PanelNames::SERVICELIST);
+      break;
+    case PanelNames::SERVICELIST:
+    case PanelNames::SERVICEINFO:
+      (reverse) ? activate(PanelNames::TOPICLIST) : activate(PanelNames::PARAMLIST);
+      break;
+    case PanelNames::PARAMLIST:
+    case PanelNames::PARAMINFO:
+      (reverse) ? activate(PanelNames::SERVICELIST) : activate(PanelNames::NODELIST);
+      break;
+    default:
+      // do nothing; these panels can't be cycled!
+      break;
+  }
+}
+
+void Display::switch_displays()
+{
+  // update to activate the left or right display
+  switch(_active)
+  {
+    case PanelNames::NODELIST: activate(PanelNames::NODEINFO); break;
+    case PanelNames::NODEINFO: activate(PanelNames::NODELIST); break;
+    case PanelNames::TOPICLIST: activate(PanelNames::TOPICINFO); break;
+    case PanelNames::TOPICINFO: activate(PanelNames::TOPICLIST); break;
+    case PanelNames::SERVICELIST: activate(PanelNames::SERVICEINFO); break;
+    case PanelNames::SERVICEINFO: activate(PanelNames::SERVICELIST); break;
+    case PanelNames::PARAMLIST: activate(PanelNames::PARAMINFO); break;
+    case PanelNames::PARAMINFO: activate(PanelNames::PARAMLIST); break;
+    default: break;
+  }
+}
 
 void Display::resize()
 {
