@@ -17,11 +17,8 @@ namespace ros_curses::panels
 class InitializationPanel : public PanelBase
 {
  private:
- public:
 
-  /* Class constructor.
-   */
-  InitializationPanel() {};
+ public:
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */

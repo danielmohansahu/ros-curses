@@ -10,11 +10,6 @@
 namespace ros_curses::panels
 {
 
-TestPanel::TestPanel()
-{
-
-}
-
 void TestPanel::render(const std::optional<ComputationalGraph>& graph)
 {
 

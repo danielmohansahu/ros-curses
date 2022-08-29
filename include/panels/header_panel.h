@@ -24,10 +24,6 @@ class HeaderPanel : public PanelBase
 
  public:
 
-  /* Class constructor.
-   */
-  HeaderPanel();
-
   /* Allow external setting of the status message.
    */
   void set_status(const std::string& status) { _status = status; }

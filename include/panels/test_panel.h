@@ -20,10 +20,6 @@ class TestPanel : public PanelBase
 
  public:
 
-  /* Class constructor.
-   */
-  TestPanel();
-
   /* Generate complete display from the given fully container ComputationalGraph.
    */
   void render(const std::optional<ComputationalGraph>& graph) override;

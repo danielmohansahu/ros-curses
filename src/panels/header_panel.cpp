@@ -10,10 +10,6 @@
 namespace ros_curses::panels
 {
 
-HeaderPanel::HeaderPanel()
-{
-}
-
 void HeaderPanel::render(const std::optional<ComputationalGraph>&)
 {
   // add status information
