@@ -110,11 +110,17 @@ class ComputationalGraph
     }
   }; // struct Node
 
+  // convenience typedefs
+  using NodeMap = std::unordered_map<std::string, std::shared_ptr<Node>>;
+  using TopicMap = std::unordered_map<std::string, std::shared_ptr<Topic>>;
+  using ServiceMap = std::unordered_map<std::string, std::shared_ptr<Service>>;
+  using ParamMap = std::unordered_map<std::string, std::shared_ptr<Param>>;
+
   // all our ROS primitives
-  std::unordered_map<std::string, std::shared_ptr<Node>> _nodes;
-  std::unordered_map<std::string, std::shared_ptr<Topic>> _topics;
-  std::unordered_map<std::string, std::shared_ptr<Service>> _services;
-  std::unordered_map<std::string, std::shared_ptr<Param>> _params;
+  NodeMap _nodes;
+  TopicMap _topics;
+  ServiceMap _services;
+  ParamMap _params;
 
   // whether or not our last connection succeeded
 
@@ -133,6 +139,22 @@ class ComputationalGraph
   /* Merge incoming graph with our internal representation, marking nodes as active / inactive.
    */
   void merge(const ComputationalGraph& other);
+
+  /* nodes structure accessor.
+   */
+  const NodeMap& nodes() const {return _nodes; }
+
+  /* topics structure accessor.
+   */
+  const TopicMap& topics() const {return _topics; }
+
+  /* services structure accessor.
+   */
+  const ServiceMap& services() const {return _services; }
+
+  /* params structure accessor.
+   */
+  const ParamMap& params() const {return _params; }
 
 };
 
