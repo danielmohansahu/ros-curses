@@ -73,11 +73,20 @@ void ComputationalGraph::merge(const ComputationalGraph& other)
 
   // merge all subcomponents
   for (const auto& [name, node] : other._nodes)
+    if (_nodes.find(name) == _nodes.end())
+      _nodes[name] = node;
+    else
     _nodes[name]->merge(*node);
   for (const auto& [name, topic] : other._topics)
-    _topics[name]->merge(*topic);
+    if (_topics.find(name) == _topics.end())
+      _topics[name] = topic;
+    else
+      _topics[name]->merge(*topic);
   for (const auto& [name, service] : other._services)
-    _services[name]->merge(*service);
+    if (_services.find(name) == _services.end())
+      _services[name] = service;
+    else
+      _services[name]->merge(*service);
 }
 
 } // namespace ros_curses

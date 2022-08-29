@@ -30,6 +30,9 @@ class MockGraphParser
   bool _connected {false};
   double _connection_change_prob {0.0};
 
+  // local latest and greatest CG
+  std::optional<ComputationalGraph> _graph;
+
   // variables for random calculations
   std::random_device _dev;
   std::mt19937 _rng;
@@ -66,9 +69,9 @@ class MockGraphParser
    */
   std::optional<ComputationalGraph> poll()
   {
-    // if we're not connected we can't return anything
+    // if we're not connected we can't update
     if (!connected())
-      return std::nullopt;
+      return _graph;
 
     // there's a high probability nothing changes
     if (random_bool(0.1))
@@ -101,7 +104,13 @@ class MockGraphParser
         _services.emplace_back(random_name(), random_names());
     }
 
-    return ComputationalGraph(_publications, _subscriptions, _services);
+    // merge into our cumulative graph
+    if (!_graph)
+      _graph = ComputationalGraph(_publications, _subscriptions, _services);
+    else
+      _graph->merge(ComputationalGraph(_publications, _subscriptions, _services));
+
+    return _graph;
   }
 
  private:
