@@ -5,10 +5,10 @@
 
 // ros_curses
 #include "display.h"
+#include "panels/test_panel.h"
 
 namespace ros_curses
 {
-
 
 Display::Display()
 {
@@ -23,25 +23,22 @@ Display::Display()
   leaveok(stdscr, true);  // don't move the cursor unless explicitly told
 
   // instantiate panels via std::unordered_map's autoconstruction
-  _panels[PanelNames::INITIALIZATION];
-  _panels[PanelNames::HELP];
-  _panels[PanelNames::NODEINFO];
-  _panels[PanelNames::NODELIST];
-  _panels[PanelNames::TOPICINFO];
-  _panels[PanelNames::TOPICLIST];
-  _panels[PanelNames::SERVICEINFO];
-  _panels[PanelNames::SERVICELIST];
-  _panels[PanelNames::PARAMINFO];
-  _panels[PanelNames::PARAMLIST];
+  _panels.emplace(PanelNames::INITIALIZATION, new panels::TestPanel());
+  _panels.emplace(PanelNames::HELP, new panels::TestPanel());
+  _panels.emplace(PanelNames::NODEINFO, new panels::TestPanel());
+  _panels.emplace(PanelNames::NODELIST, new panels::TestPanel());
+  _panels.emplace(PanelNames::TOPICINFO, new panels::TestPanel());
+  _panels.emplace(PanelNames::TOPICLIST, new panels::TestPanel());
+  _panels.emplace(PanelNames::SERVICEINFO, new panels::TestPanel());
+  _panels.emplace(PanelNames::SERVICELIST, new panels::TestPanel());
+  _panels.emplace(PanelNames::PARAMINFO, new panels::TestPanel());
+  _panels.emplace(PanelNames::PARAMLIST, new panels::TestPanel());
 
   // resize to fit current display
   resize();
 
   // start with only the INITIALIZATION screen active
-  activate(PanelNames::INITIALIZATION);
-
-  // add header information
-  // update_header("initializing...");
+  show_displays(PanelNames::INITIALIZATION);
 }
 
 Display::~Display()
@@ -50,7 +47,7 @@ Display::~Display()
   endwin();
 }
 
-void Display::activate(const PanelNames panel, bool hide)
+void Display::activate(const PanelNames panel)
 {
   // save last state to support toggling
   _last_active = _active;
@@ -61,18 +58,20 @@ void Display::activate(const PanelNames panel, bool hide)
   _panels.at(_active)->set_active(true);
 }
 
+void Display::supersede(const PanelNames panel, const bool supersede)
+{
+  _panels[panel]->set_visible(supersede);
+  activate(supersede ? panel : _last_active);
+}
+
 ros_curses::Action Display::process(const std::optional<ros_curses::ComputationalGraph>& graph)
 {
   // core method to be called every loop
   
   // process incoming data, if there's anything
-  // if (graph)
-  //   for (const auto& [key, data] : *graph)
-  //     _panels.at(key).write(data);
-
-  // // perform updates for screens handle internally
-  // update_header( !graph ? "disconnected..." : "connected" );
-  // update_help_panel();
+  if (graph)
+    for (auto& kv : _panels)
+      kv.second->render(*graph);
 
   // process user input
   const Action action = process_user_input();
@@ -115,7 +114,7 @@ ros_curses::Action Display::process_user_input()
         return Action::EXIT;
     case int('h'):      // toggle help screen
     case int('?'):      // toggle help screen
-      (_active != PanelNames::HELP) ? activate(PanelNames::HELP) : activate(_last_active, true);
+      (_active != PanelNames::HELP) ? supersede(PanelNames::HELP, true) : supersede(PanelNames::HELP, false);
       break;
     case int('\t'):     // tab between panel display options
       cycle_displays();
@@ -142,6 +141,19 @@ ros_curses::Action Display::process_user_input()
 //   touchline(stdscr, 0, 3);
 // }
 
+void Display::show_displays(const PanelNames first, const PanelNames second)
+{
+  // hide all panels that aren't the given two
+  for (auto& kv : _panels)
+    if (kv.first == first || kv.first == second)
+      kv.second->set_visible(true);
+    else
+      kv.second->set_visible(false);
+  
+  // activate the first panel
+  activate(first);
+}
+
 void Display::cycle_displays(const bool reverse)
 {
   // cycle through displays
@@ -149,19 +161,19 @@ void Display::cycle_displays(const bool reverse)
   {
     case PanelNames::NODELIST:
     case PanelNames::NODEINFO:
-      (reverse) ? activate(PanelNames::PARAMLIST) : activate(PanelNames::TOPICLIST);
+      (reverse) ? show_displays(PanelNames::PARAMLIST, PanelNames::PARAMINFO) : show_displays(PanelNames::TOPICLIST, PanelNames::TOPICINFO);
       break;
     case PanelNames::TOPICLIST:
     case PanelNames::TOPICINFO:
-      (reverse) ? activate(PanelNames::NODELIST) : activate(PanelNames::SERVICELIST);
+      (reverse) ? show_displays(PanelNames::NODELIST, PanelNames::NODEINFO) : show_displays(PanelNames::SERVICELIST, PanelNames::SERVICEINFO);
       break;
     case PanelNames::SERVICELIST:
     case PanelNames::SERVICEINFO:
-      (reverse) ? activate(PanelNames::TOPICLIST) : activate(PanelNames::PARAMLIST);
+      (reverse) ? show_displays(PanelNames::TOPICLIST, PanelNames::TOPICINFO) : show_displays(PanelNames::PARAMLIST, PanelNames::PARAMINFO);
       break;
     case PanelNames::PARAMLIST:
     case PanelNames::PARAMINFO:
-      (reverse) ? activate(PanelNames::SERVICELIST) : activate(PanelNames::NODELIST);
+      (reverse) ? show_displays(PanelNames::SERVICELIST, PanelNames::SERVICEINFO) : show_displays(PanelNames::NODELIST, PanelNames::NODEINFO);
       break;
     default:
       // do nothing; these panels can't be cycled!
@@ -205,10 +217,10 @@ void Display::resize()
   _panels.at(PanelNames::PARAMLIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
 
   // info displays get the right half of the screen
-  _panels.at(PanelNames::NODEINFO)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::TOPICINFO)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::SERVICEINFO)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::PARAMINFO)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::NODEINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::TOPICINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::SERVICEINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::PARAMINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);
 }
 
 // void Display::update_help_panel()

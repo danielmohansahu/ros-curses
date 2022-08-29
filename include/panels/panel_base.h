@@ -14,11 +14,11 @@
 #include "curses.h"
 #include "panel.h"
 
+// ros_curses
+#include "../computational_graph.h"
+
 namespace ros_curses::panels
 {
-
-// forward declaration for required class
-class ComputationalGraph;
 
 /* Abstract base class for a Panel.
  *

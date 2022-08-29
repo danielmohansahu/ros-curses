@@ -45,15 +45,23 @@ class Display
   Display();
   ~Display();
 
-  /* Switch to the target active display, optionally hiding the previous display.
-   */
-  void activate(const PanelNames panel, const bool hide = false);
-
   /* Core polling method; called every loop with updates.
    */
   Action process(const std::optional<ComputationalGraph>& graph);
 
+  /* Set the given panels as visible, hiding everything else, and activate 'first'.
+   */
+  void show_displays(const PanelNames first, const PanelNames second = PanelNames::NONEXISTENT);
+
  private:
+
+  /* Switch to the target active display.
+   */
+  void activate(const PanelNames panel);
+
+  /* Toggle the given panel as visible over everything else or hidden.
+   */
+  void supersede(const PanelNames panel, const bool supersede);
 
   /* Process user input, returning the desired action if not applicable to visualization.
    */

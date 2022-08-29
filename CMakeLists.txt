@@ -12,6 +12,7 @@ find_library(CURSES_PANELS_LIBRARIES libpanel.so libpanelw.so HINTS ${NCURSES_LI
 # core ros-curses library
 set(SRC_FILES
   src/panels/panel_base.cpp
+  src/panels/test_panel.cpp
   src/computational_graph.cpp
   src/display.cpp
   src/ros_curses.cpp

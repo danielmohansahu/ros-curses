@@ -26,7 +26,7 @@ int main(int argv, char** argc)
   auto display = Display();
 
   // activate display
-  display.activate(PanelNames::NODELIST);
+  display.show_displays(PanelNames::NODELIST, PanelNames::NODEINFO);
 
   // make a dummy empty data payload
   //  @todo generate randomly
