@@ -15,16 +15,15 @@
 #include "display.h"
 #include "parsers/mock.h"
 
+using namespace ros_curses;
+
 int main(int argv, char** argc)
 {
-  using PanelNames = ros_curses::PanelNames;
-  using LineDatum = ros_curses::LineDatum;
-
   // construct Mock parser to generate a random graph
-  ros_curses::MockGraphParser mock {};
+  MockGraphParser mock {};
 
   // construct basic display class
-  auto display = curses::Display();
+  auto display = Display();
 
   // activate display
   display.activate(PanelNames::NODELIST);
@@ -34,6 +33,6 @@ int main(int argv, char** argc)
   std::unordered_map<PanelNames,std::vector<LineDatum>> dummy_payload {};
 
   // process until shutdown
-  while (display.process(mock.poll()) != ros_curses::Action::EXIT)
+  while (display.process(mock.poll()) != Action::EXIT)
     usleep(10000);
 }

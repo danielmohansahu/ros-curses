@@ -6,68 +6,8 @@
 // ros_curses
 #include "display.h"
 
-namespace curses
+namespace ros_curses
 {
-
-Panel::Panel(size_t rows, size_t cols, size_t origin_y, size_t origin_x)
- : _window(newwin(rows, cols, origin_y, origin_x)), _panel(new_panel(_window))
-{
-  // set common curses parameters for this window
-  keypad(_window, true);
-  nodelay(_window, true);
-  scrollok(_window, true);
-  leaveok(_window, true);
-
-  // make sure we're not hidden, although we may be superseded
-  show_panel(_panel);
-}
-
-void Panel::redraw()
-{
-  // clear contents
-  wclear(_window);
-
-  // indicate that we're active via a box
-  if (_active)
-    box(_window, ACS_VLINE, ACS_HLINE);
-
-  // indicate that we should be completely redrawn on next doupdate
-  touchwin(_window);
-}
-
-void Panel::set_active()
-{
-  _active = true;
-  top_panel(_panel);
-  wmove(_window, 0, 0);
-  redraw();
-}
-
-void Panel::set_inactive(const bool hide)
-{
-  if (hide)
-    hide_panel(_panel);
-  // clear contents
-  _active = false;
-  redraw();
-}
-
-void Panel::move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x)
-{
-  // resize window, move it, and then replace the panel
-  wresize(_window, rows, cols);
-  mvwin(_window, y, x);
-  replace_panel(_panel, _window);
-  redraw();
-}
-
-void Panel::write(const std::vector<ros_curses::LineDatum>& lines)
-{
-  // write the given data directly to our screen
-  //  @TODO handle formatting
-  for (size_t i = 0; i != lines.size(); ++i)
-    mvwaddstr(_window, i + 1, 1, lines[i].text.c_str());
-}
 
 
 Display::Display()
@@ -101,7 +41,7 @@ Display::Display()
   activate(PanelNames::INITIALIZATION);
 
   // add header information
-  update_header("initializing...");
+  // update_header("initializing...");
 }
 
 Display::~Display()
@@ -117,8 +57,8 @@ void Display::activate(const PanelNames panel, bool hide)
   _active = panel;
 
   // set states of appropriate panels
-  _panels.at(_last_active).set_inactive(hide);
-  _panels.at(_active).set_active();
+  _panels.at(_last_active)->set_active(false);
+  _panels.at(_active)->set_active(true);
 }
 
 ros_curses::Action Display::process(const std::optional<ros_curses::ComputationalGraph>& graph)
@@ -130,9 +70,9 @@ ros_curses::Action Display::process(const std::optional<ros_curses::Computationa
   //   for (const auto& [key, data] : *graph)
   //     _panels.at(key).write(data);
 
-  // perform updates for screens handle internally
-  update_header( !graph ? "disconnected..." : "connected" );
-  update_help_panel();
+  // // perform updates for screens handle internally
+  // update_header( !graph ? "disconnected..." : "connected" );
+  // update_help_panel();
 
   // process user input
   const Action action = process_user_input();
@@ -152,7 +92,7 @@ ros_curses::Action Display::process_user_input()
   Action action = Action::NONE;
 
   // handle user input in active display
-  const int ch = _panels.at(_active).get_ch();
+  const int ch = _panels.at(_active)->get_ch();
   switch (ch)
   {
     case ERR:           // no user input; do nothing
@@ -161,10 +101,10 @@ ros_curses::Action Display::process_user_input()
       resize();
       break;
     case KEY_UP:        // move selection up
-      action = Action::DECREMENT;
+      _panels.at(_active)->handle_key_up();
       break;
     case KEY_DOWN:      // move selection down
-      action = Action::INCREMENT;
+      _panels.at(_active)->handle_key_down();
       break;
     case KEY_LEFT:      // move selection left
     case KEY_RIGHT:     // move selection right
@@ -181,7 +121,7 @@ ros_curses::Action Display::process_user_input()
       cycle_displays();
       break;
     default:
-      _panels.at(_active).debug("Unknown command: " + std::to_string(ch));
+      _panels.at(_active)->debug("Unknown command: " + std::to_string(ch));
       break;
   }
 
@@ -189,17 +129,18 @@ ros_curses::Action Display::process_user_input()
   return action;
 }
 
-void Display::update_header(const std::string& status)
-{
-  // latch header information
-  if (status != "")
-    _header_status = status;
+// void Display::update_header(const std::string& status)
+// {
+//   // latch header information
+//   if (status != "")
+//     _header_status = status;
 
-  // use the stdscr for all our header information
-  mvaddstr(0, 0, "ros-curses: Command line introspection of the ROS computational graph.");
-  mvprintw(1, 0, "  Status: %s", _header_status.c_str());
-  mvprintw(2, 0, "  Active: %u", _active);
-}
+//   // use the stdscr for all our header information
+//   mvaddstr(0, 0, "ros-curses: Command line introspection of the ROS computational graph.");
+//   mvprintw(1, 0, "  Status: %s", _header_status.c_str());
+//   mvprintw(2, 0, "  Active: %u", _active);
+//   touchline(stdscr, 0, 3);
+// }
 
 void Display::cycle_displays(const bool reverse)
 {
@@ -252,39 +193,39 @@ void Display::resize()
   getmaxyx(stdscr, rows, cols);
 
   // INITIALIZATION screen gets the full size except for a few header rows
-  _panels.at(PanelNames::INITIALIZATION).move_and_resize(rows - HEADER_ROWS, cols, HEADER_ROWS, 0);
+  _panels.at(PanelNames::INITIALIZATION)->move_and_resize(rows - HEADER_ROWS, cols, HEADER_ROWS, 0);
 
   // help panel gets a fixed width in the middle of the screen
-  _panels.at(PanelNames::HELP).move_and_resize(4 * rows / 5, HELP_COLS, rows / 10, (cols - HELP_COLS) / 2);
+  _panels.at(PanelNames::HELP)->move_and_resize(4 * rows / 5, HELP_COLS, rows / 10, (cols - HELP_COLS) / 2);
 
   // list displays get the left half of the screen
-  _panels.at(PanelNames::NODELIST).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
-  _panels.at(PanelNames::TOPICLIST).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
-  _panels.at(PanelNames::SERVICELIST).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
-  _panels.at(PanelNames::PARAMLIST).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
+  _panels.at(PanelNames::NODELIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
+  _panels.at(PanelNames::TOPICLIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
+  _panels.at(PanelNames::SERVICELIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
+  _panels.at(PanelNames::PARAMLIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
 
   // info displays get the right half of the screen
-  _panels.at(PanelNames::NODEINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::TOPICINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::SERVICEINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
-  _panels.at(PanelNames::PARAMINFO).move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::NODEINFO)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::TOPICINFO)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::SERVICEINFO)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
+  _panels.at(PanelNames::PARAMINFO)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, cols / 2);
 }
 
-void Display::update_help_panel()
-{
-  // hardcoded information for the help window
-  std::vector<ros_curses::LineDatum> message;
-  message.emplace_back("ros-curses help");
-  message.emplace_back("       UP : move cursor up");
-  message.emplace_back("     DOWN : move cursor down");
-  message.emplace_back("     LEFT : switch active display");
-  message.emplace_back("    RIGHT : switch active display");
-  message.emplace_back("      TAB : cycle panels");
-  message.emplace_back("     h, ? : toggle help menu");
-  message.emplace_back("        q : quit / exit");
+// void Display::update_help_panel()
+// {
+//   // hardcoded information for the help window
+//   std::vector<ros_curses::LineDatum> message;
+//   message.emplace_back("ros-curses help", A_BOLD);
+//   message.emplace_back("       UP : move cursor up");
+//   message.emplace_back("     DOWN : move cursor down");
+//   message.emplace_back("     LEFT : switch active display");
+//   message.emplace_back("    RIGHT : switch active display");
+//   message.emplace_back("      TAB : cycle panels");
+//   message.emplace_back("     h, ? : toggle help menu");
+//   message.emplace_back("        q : quit / exit");
 
-  // write message
-  _panels.at(PanelNames::HELP).write(message);
-}
+//   // write message
+//   _panels.at(PanelNames::HELP).write(message);
+// }
 
 } // namespace ros_curses

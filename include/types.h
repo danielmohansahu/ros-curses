@@ -42,13 +42,12 @@ enum Action
 struct LineDatum
 {
   const std::string text;
-  const uint8_t indentations;
-  const bool highlight;
+  const int format;
 
   // only allowed constructor is the one provided
   LineDatum() = delete;
-  LineDatum(const std::string& text_, const uint8_t indentations_=0, const bool highlight_=false)
-   : text(text_), indentations(indentations_), highlight(highlight_)
+  LineDatum(const std::string& text_, const int format_ = A_NORMAL)
+   : text(text_), format(format_)
   {};
 
 }; // class LineDatum
