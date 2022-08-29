@@ -6,6 +6,7 @@
 // ros_curses
 #include "display.h"
 #include "panels/help_panel.h"
+#include "panels/initialization_panel.h"
 #include "panels/test_panel.h"
 
 namespace ros_curses
@@ -24,7 +25,7 @@ Display::Display()
   leaveok(stdscr, true);  // don't move the cursor unless explicitly told
 
   // instantiate panels via std::unordered_map's autoconstruction
-  _panels.emplace(PanelNames::INITIALIZATION, new panels::TestPanel());
+  _panels.emplace(PanelNames::INITIALIZATION, new panels::InitializationPanel());
   _panels.emplace(PanelNames::HELP, new panels::HelpPanel());
   _panels.emplace(PanelNames::NODEINFO, new panels::TestPanel());
   _panels.emplace(PanelNames::NODELIST, new panels::TestPanel());
@@ -75,16 +76,25 @@ ros_curses::Action Display::process(const std::optional<ros_curses::Computationa
 {
   // core method to be called every loop
 
-  // check if we're uninitialized
-  if (!graph)
+  // check if we've been initialized (latched boolean)
+  if (graph && !_initialized)
   {
-    // only show initialization screen and header
-    show_displays(PanelNames::INITIALIZATION);
+    // first time initialization
+    _initialized = true;
+    show_displays(PanelNames::NODELIST, PanelNames::NODEINFO);
+  }
+
+  // check if we're uninitialized
+  if (!_initialized)
+  {
     _panels.at(PanelNames::INITIALIZATION)->render(graph);
     _header_panel->render(graph);
   }
   else
   {
+    // we expect to always receive valid data after initialization
+    assert(graph);
+
     // process incoming data
     for (auto& kv : _panels)
       kv.second->render(graph);
@@ -110,6 +120,12 @@ ros_curses::Action Display::process_user_input()
 
   // handle user input in active display
   const int ch = _panels.at(_active)->get_ch();
+
+  // until we've been initialized, all the user can do is quit
+  if (!_initialized)
+    return (ch == int('q')) ? Action::EXIT : Action::NONE;
+
+  // otherwise, process full suite of commands
   switch (ch)
   {
     case ERR:           // no user input; do nothing

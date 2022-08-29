@@ -11,6 +11,7 @@
 #include <memory>
 #include <unordered_map>
 #include <optional>
+#include <assert.h>
 
 // curses
 #include <curses.h>
@@ -38,6 +39,10 @@ class Display
   // currently active window (user selected)
   PanelNames _active {PanelNames::INITIALIZATION};
   PanelNames _last_active {_active};
+
+  // whether or not we've received valid data
+  //  RAII? What's that?
+  bool _initialized {false};
 
   // miscellaneous formatting data
   static const inline uint8_t HEADER_ROWS {4};

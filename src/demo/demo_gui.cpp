@@ -25,9 +25,6 @@ int main(int argv, char** argc)
   // construct basic display class
   auto display = Display();
 
-  // activate display
-  display.show_displays(PanelNames::NODELIST, PanelNames::NODEINFO);
-
   // make a dummy empty data payload
   //  @todo generate randomly
   std::unordered_map<PanelNames,std::vector<LineDatum>> dummy_payload {};
