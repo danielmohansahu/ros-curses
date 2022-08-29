@@ -16,8 +16,8 @@ namespace ros_curses
 enum PanelNames
 {
   NONEXISTENT,
-  STDSCR,
   INITIALIZATION,
+  HEADER,
   HELP,
   NODELIST,
   NODEINFO,

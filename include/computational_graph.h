@@ -116,6 +116,8 @@ class ComputationalGraph
   std::unordered_map<std::string, std::shared_ptr<Service>> _services;
   std::unordered_map<std::string, std::shared_ptr<Param>> _params;
 
+  // whether or not our last connection succeeded
+
  public:
   /* Construct a new graph from the given ROS status message
    *

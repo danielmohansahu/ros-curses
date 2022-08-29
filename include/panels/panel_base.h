@@ -57,7 +57,7 @@ class PanelBase
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */
-  virtual void render(const ComputationalGraph& graph) = 0;
+  virtual void render(const std::optional<ComputationalGraph>& graph) = 0;
 
   /* Handle 'up' keystroke.
    */

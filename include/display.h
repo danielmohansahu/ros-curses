@@ -20,6 +20,7 @@
 #include "types.h"
 #include "computational_graph.h"
 #include "panels/panel_base.h"
+#include "panels/header_panel.h"
 
 namespace ros_curses
 {
@@ -32,13 +33,14 @@ class Display
 
   // all available panels
   std::unordered_map<PanelNames, std::unique_ptr<panels::PanelBase>> _panels;
+  std::unique_ptr<panels::HeaderPanel> _header_panel;
 
   // currently active window (user selected)
   PanelNames _active {PanelNames::INITIALIZATION};
   PanelNames _last_active {_active};
 
   // miscellaneous formatting data
-  static const inline uint8_t HEADER_ROWS {3};
+  static const inline uint8_t HEADER_ROWS {4};
   static const inline uint8_t HELP_COLS {50};
 
  public:

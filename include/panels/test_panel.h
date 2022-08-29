@@ -26,7 +26,7 @@ class TestPanel : public PanelBase
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */
-  void render(const ComputationalGraph& graph) override;
+  void render(const std::optional<ComputationalGraph>& graph) override;
 
   /* Handle 'up' keystroke.
    */

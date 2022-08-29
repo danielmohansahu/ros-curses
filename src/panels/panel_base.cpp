@@ -21,6 +21,7 @@ PanelBase::PanelBase(size_t rows, size_t cols, size_t origin_y, size_t origin_x)
 
   // default state is visible, inactive
   show_panel(_panel);
+  redraw();
 }
 
 void PanelBase::redraw()

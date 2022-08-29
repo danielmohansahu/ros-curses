@@ -34,6 +34,9 @@ Display::Display()
   _panels.emplace(PanelNames::PARAMINFO, new panels::TestPanel());
   _panels.emplace(PanelNames::PARAMLIST, new panels::TestPanel());
 
+  // maintain header panel separately
+  _header_panel = std::make_unique<panels::HeaderPanel>();
+
   // resize to fit current display
   resize();
 
@@ -56,6 +59,9 @@ void Display::activate(const PanelNames panel)
   // set states of appropriate panels
   _panels.at(_last_active)->set_active(false);
   _panels.at(_active)->set_active(true);
+
+  // indicate in header
+  _header_panel->set_active(_active);
 }
 
 void Display::supersede(const PanelNames panel, const bool supersede)
@@ -68,16 +74,15 @@ ros_curses::Action Display::process(const std::optional<ros_curses::Computationa
 {
   // core method to be called every loop
   
-  // process incoming data, if there's anything
-  if (graph)
-    for (auto& kv : _panels)
-      kv.second->render(*graph);
+  // process incoming data
+  for (auto& kv : _panels)
+    kv.second->render(graph);
+  _header_panel->render(graph);
 
   // process user input
   const Action action = process_user_input();
 
   // perform refresh of all windows / panels
-  refresh();
   update_panels();
   doupdate();
 
@@ -127,19 +132,6 @@ ros_curses::Action Display::process_user_input()
   // indicate that no user action is required.
   return action;
 }
-
-// void Display::update_header(const std::string& status)
-// {
-//   // latch header information
-//   if (status != "")
-//     _header_status = status;
-
-//   // use the stdscr for all our header information
-//   mvaddstr(0, 0, "ros-curses: Command line introspection of the ROS computational graph.");
-//   mvprintw(1, 0, "  Status: %s", _header_status.c_str());
-//   mvprintw(2, 0, "  Active: %u", _active);
-//   touchline(stdscr, 0, 3);
-// }
 
 void Display::show_displays(const PanelNames first, const PanelNames second)
 {
@@ -204,19 +196,22 @@ void Display::resize()
   int rows, cols;
   getmaxyx(stdscr, rows, cols);
 
+  // HEADER panel gets the top few rows
+  _header_panel->move_and_resize(HEADER_ROWS, cols, 0, 0);
+
   // INITIALIZATION screen gets the full size except for a few header rows
   _panels.at(PanelNames::INITIALIZATION)->move_and_resize(rows - HEADER_ROWS, cols, HEADER_ROWS, 0);
 
-  // help panel gets a fixed width in the middle of the screen
+  // HELP panel gets a fixed width in the middle of the screen
   _panels.at(PanelNames::HELP)->move_and_resize(4 * rows / 5, HELP_COLS, rows / 10, (cols - HELP_COLS) / 2);
 
-  // list displays get the left half of the screen
+  // LIST displays get the left half of the screen
   _panels.at(PanelNames::NODELIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
   _panels.at(PanelNames::TOPICLIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
   _panels.at(PanelNames::SERVICELIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
   _panels.at(PanelNames::PARAMLIST)->move_and_resize(rows - HEADER_ROWS, cols / 2, HEADER_ROWS, 0);
 
-  // info displays get the right half of the screen
+  // INFO displays get the right half of the screen
   _panels.at(PanelNames::NODEINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);
   _panels.at(PanelNames::TOPICINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);
   _panels.at(PanelNames::SERVICEINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);

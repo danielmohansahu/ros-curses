@@ -15,7 +15,7 @@ TestPanel::TestPanel()
 
 }
 
-void TestPanel::render(const ComputationalGraph& graph)
+void TestPanel::render(const std::optional<ComputationalGraph>& graph)
 {
 
 }
