@@ -7,6 +7,7 @@
 #pragma once
 
 // STL
+#include <string.h>
 #include <string>
 #include <vector>
 #include <optional>
@@ -43,11 +44,17 @@ class PanelBase
   size_t _rows {0};
   size_t _cols {0};
 
+  // hardcoded border size
+  const uint8_t BORDER {1};
+
   // current scroll amount
   int _scroll_value {0};
 
   // completely redraw this panel, clearing all information
   void redraw();
+
+  // redraw the border
+  void draw_border();
 
  public:
   // constructors
@@ -86,7 +93,7 @@ class PanelBase
    */
   void move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x);
 
-  /************************* Window Pass-through API *************************/
+  /*************************** Useful Utilities API **************************/
 
   /* Get user input to the given panel, if any.
    */
@@ -95,6 +102,14 @@ class PanelBase
   /* Add a string to the bottom of our window (mostly for debugging)
    */
   void debug(const std::string& str) { mvwaddstr(_window, _rows - 2, _cols + 1, str.c_str()); }
+
+  /* Write a single line to our window.
+   */
+  void print_line(const size_t row, const std::string& str, const int format = A_NORMAL);
+
+  /* Write a single center-aligned line to our window.
+   */
+  void print_line_center(const size_t row, const std::string& str, const int format = A_NORMAL);
 
 }; // class PanelBase
 

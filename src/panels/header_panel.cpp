@@ -16,10 +16,15 @@ HeaderPanel::HeaderPanel()
 
 void HeaderPanel::render(const std::optional<ComputationalGraph>&)
 {
-  mvwaddstr(_window, 0, 1, "ros-curses: Command line introspection of the ROS computational graph.");
-  mvwprintw(_window, 1, 2, "Status: %s", _status.c_str());
-  mvwprintw(_window, 2, 2, "Active: %u", _active);
-  touchline(_window, 0, 3);
+  // add status information
+  print_line(1, " Status: " + _status);
+  print_line(2, " Active: " + std::to_string(_active));
+
+  // redraw border
+  draw_border();
+
+  // add this after the border, to override it. I think it looks nice...
+  mvwaddnstr(_window, 0, 1, "ros-curses: Command line introspection of the ROS computational graph.", _cols - 2 * BORDER);
 }
 
 } // namespace ros_curses::panels
