@@ -9,6 +9,7 @@
 // STL
 #include <string>
 #include <vector>
+#include <optional>
 
 // curses
 #include "curses.h"
@@ -75,11 +76,11 @@ class PanelBase
 
   /* Mark this panel as either active (current cursor location) or inactive.
    */
-  void set_active(const bool active);
+  virtual void set_active(const bool active);
 
   /* Mark this panel as either visible or hidden.
    */
-  void set_visible(const bool visible);
+  virtual void set_visible(const bool visible);
 
   /* Resize to the given dimensions and move to the given location.
    */

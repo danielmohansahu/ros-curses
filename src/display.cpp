@@ -5,6 +5,7 @@
 
 // ros_curses
 #include "display.h"
+#include "panels/help_panel.h"
 #include "panels/test_panel.h"
 
 namespace ros_curses
@@ -24,7 +25,7 @@ Display::Display()
 
   // instantiate panels via std::unordered_map's autoconstruction
   _panels.emplace(PanelNames::INITIALIZATION, new panels::TestPanel());
-  _panels.emplace(PanelNames::HELP, new panels::TestPanel());
+  _panels.emplace(PanelNames::HELP, new panels::HelpPanel());
   _panels.emplace(PanelNames::NODEINFO, new panels::TestPanel());
   _panels.emplace(PanelNames::NODELIST, new panels::TestPanel());
   _panels.emplace(PanelNames::TOPICINFO, new panels::TestPanel());
@@ -73,11 +74,23 @@ void Display::supersede(const PanelNames panel, const bool supersede)
 ros_curses::Action Display::process(const std::optional<ros_curses::ComputationalGraph>& graph)
 {
   // core method to be called every loop
-  
-  // process incoming data
-  for (auto& kv : _panels)
-    kv.second->render(graph);
-  _header_panel->render(graph);
+
+  // check if we're uninitialized
+  if (!graph)
+  {
+    // only show initialization screen and header
+    show_displays(PanelNames::INITIALIZATION);
+    _panels.at(PanelNames::INITIALIZATION)->render(graph);
+    _header_panel->render(graph);
+  }
+  else
+  {
+    // process incoming data
+    for (auto& kv : _panels)
+      kv.second->render(graph);
+    _header_panel->set_status("connected");
+    _header_panel->render(graph);
+  }
 
   // process user input
   const Action action = process_user_input();
@@ -217,22 +230,5 @@ void Display::resize()
   _panels.at(PanelNames::SERVICEINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);
   _panels.at(PanelNames::PARAMINFO)->move_and_resize(rows - HEADER_ROWS, (cols + 1) / 2, HEADER_ROWS, cols / 2);
 }
-
-// void Display::update_help_panel()
-// {
-//   // hardcoded information for the help window
-//   std::vector<ros_curses::LineDatum> message;
-//   message.emplace_back("ros-curses help", A_BOLD);
-//   message.emplace_back("       UP : move cursor up");
-//   message.emplace_back("     DOWN : move cursor down");
-//   message.emplace_back("     LEFT : switch active display");
-//   message.emplace_back("    RIGHT : switch active display");
-//   message.emplace_back("      TAB : cycle panels");
-//   message.emplace_back("     h, ? : toggle help menu");
-//   message.emplace_back("        q : quit / exit");
-
-//   // write message
-//   _panels.at(PanelNames::HELP).write(message);
-// }
 
 } // namespace ros_curses
