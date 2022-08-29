@@ -10,7 +10,6 @@
 namespace ros_curses::panels
 {
 
-
 PanelBase::PanelBase(size_t rows, size_t cols, size_t origin_y, size_t origin_x)
  : _window(newwin(rows, cols, origin_y, origin_x)), _panel(new_panel(_window))
 {
@@ -18,6 +17,7 @@ PanelBase::PanelBase(size_t rows, size_t cols, size_t origin_y, size_t origin_x)
   keypad(_window, true);
   nodelay(_window, true);
   leaveok(_window, true);
+  clearok(_window, true);
 
   // default state is visible, inactive
   show_panel(_panel);
@@ -27,7 +27,7 @@ PanelBase::PanelBase(size_t rows, size_t cols, size_t origin_y, size_t origin_x)
 void PanelBase::redraw()
 {
   // clear contents
-  wclear(_window);
+  werase(_window);
 
   // indicate that we're active via a solid box or inactive via dashed
   if (_active)
