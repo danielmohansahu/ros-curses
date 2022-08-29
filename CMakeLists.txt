@@ -13,6 +13,7 @@ find_library(CURSES_PANELS_LIBRARIES libpanel.so libpanelw.so HINTS ${NCURSES_LI
 set(SRC_FILES
   src/panels/header_panel.cpp
   src/panels/help_panel.cpp
+  src/panels/initialization_panel.cpp
   src/panels/panel_base.cpp
   src/panels/test_panel.cpp
   src/computational_graph.cpp
