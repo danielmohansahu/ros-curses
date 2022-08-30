@@ -12,6 +12,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <algorithm>
 
 namespace ros_curses
 {
@@ -155,6 +156,40 @@ class ComputationalGraph
   /* params structure accessor.
    */
   const ParamMap& params() const {return _params; }
+
+  /* nodes keys accessor.
+   */
+  std::vector<std::string> node_list() const { return get_keys(_nodes); };
+
+  /* topics keys accessor.
+   */
+  std::vector<std::string> topic_list() const { return get_keys(_topics); };
+
+  /* services keys accessor.
+   */
+  std::vector<std::string> service_list() const { return get_keys(_services); };
+
+  /* params keys accessor.
+   */
+  std::vector<std::string> param_list() const { return get_keys(_params); };
+
+ private:
+
+  /* convenience method to extract keys from a map.
+   */
+  template <typename T>
+  std::vector<std::string> get_keys(const std::unordered_map<std::string,T> map) const
+  {
+    // get keys in a vector
+    std::vector<std::string> result;
+    result.reserve(map.size());
+    for (const auto& kv : map)
+      result.push_back(kv.first);
+
+    // sort for good measure
+    std::sort(result.begin(), result.end());
+    return result;
+  }
 
 };
 

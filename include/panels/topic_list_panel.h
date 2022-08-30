@@ -33,9 +33,6 @@ class TopicListPanel : public PanelBase
   // last index displayed in our visible region, to implement scrolling hysteresis
   size_t _last_start_idx {0};
 
-  // helper function to update selection based on user input
-  size_t update_selection(const std::vector<std::string>& names);
-
  public:
 
   /* Generate complete display from the given fully container ComputationalGraph.

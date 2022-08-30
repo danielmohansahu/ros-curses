@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <algorithm>
 
 // curses
 #include "curses.h"
@@ -37,7 +38,38 @@ class ScrollRegion
 
   /* Returns whether or not scrolling is required.
    */
-  bool scroll_required(const size_t length) const{ return length > _size; }
+  bool scroll_required(const size_t length) const { return length > _size; }
+
+  /* Find the index of the given object in the given list, and return the shifted index.
+   */
+  template <typename T>
+  std::optional<size_t> shift(const std::optional<T>& item, const std::vector<T>& items, const int shift)
+  {
+    // if the incoming vector is empty we can't do anything
+    if (items.size() == 0)
+      return std::nullopt;
+
+    // handle inputs that we can't find
+    if (!item || std::find(items.begin(), items.end(), *item) == items.end())
+      return 0;
+
+    // find item's current location
+    size_t idx = std::distance(items.begin(), std::find(items.begin(), items.end(), *item));
+
+    // check if we need to shift
+    if (shift != 0 && items.size() > 1)
+    {
+      // wrap negative shifting
+      int shift_pos = shift;
+      while (shift_pos < 0)
+        shift_pos += items.size() - 1;
+
+      // get element _shift elements away from current selection    
+      idx = (idx + shift_pos) % (items.size() - 1);
+    }
+    // return resulting index
+    return idx;
+  }
 
   /* Calculate the visible indices in [0,length-1] subject to the start index constraint.
    *
