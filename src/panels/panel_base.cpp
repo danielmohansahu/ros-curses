@@ -81,7 +81,7 @@ void PanelBase::print_line(const size_t row, const std::string& str, const int f
 {
   // enable custom formatting
   if (format != A_NORMAL)
-    attron(format);
+    wattron(_window, format);
 
   // write to line
   mvwaddnstr(_window, row, BORDER, str.c_str(), _cols - BORDER);
@@ -91,7 +91,7 @@ void PanelBase::print_line(const size_t row, const std::string& str, const int f
 
   // turn off custom formatting
   if (format != A_NORMAL)
-    attroff(format);
+    wattroff(_window, format);
 }
 
 void PanelBase::print_line_center(const size_t row, const std::string& str, const int format)
@@ -107,7 +107,7 @@ void PanelBase::print_line_center(const size_t row, const std::string& str, cons
 
   // enable custom formatting
   if (format != A_NORMAL)
-    attron(format);
+    wattron(_window, format);
 
   size_t start_col = (_cols - 2 * BORDER - str.size()) / 2;
   mvwaddstr(_window, row, start_col, str.c_str());
@@ -117,7 +117,7 @@ void PanelBase::print_line_center(const size_t row, const std::string& str, cons
 
   // turn off custom formatting
   if (format != A_NORMAL)
-    attroff(format);
+    wattroff(_window, format);
 }
 
 } // namespace ros_curses::panels
