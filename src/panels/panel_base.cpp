@@ -62,6 +62,12 @@ void PanelBase::set_visible(const bool visible)
     show_panel(_panel);
   else
     hide_panel(_panel);
+  _visible = visible;
+}
+
+bool PanelBase::visible() const
+{
+  return _visible;
 }
 
 void PanelBase::move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x)

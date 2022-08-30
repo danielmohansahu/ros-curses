@@ -98,7 +98,8 @@ ros_curses::Action Display::process(const std::optional<ros_curses::Computationa
 
     // process incoming data
     for (auto& kv : _panels)
-      kv.second->render(graph);
+      if (kv.second->visible())
+        kv.second->render(graph);
     _header_panel->set_status("connected");
     _header_panel->render(graph);
   }

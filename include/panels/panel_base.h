@@ -135,6 +135,7 @@ class PanelBase
 
   // boolean indicating if we're active or not
   bool _active {false};
+  bool _visible {false};
 
   // size metadata
   size_t _rows {0};
@@ -184,6 +185,10 @@ class PanelBase
   /* Mark this panel as either visible or hidden.
    */
   virtual void set_visible(const bool visible);
+
+  /* Returns whether or not this panel is currently visible.
+   */
+  virtual bool visible() const;
 
   /* Resize to the given dimensions and move to the given location.
    */
