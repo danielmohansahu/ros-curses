@@ -22,7 +22,7 @@ class TestPanel : public PanelBase
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */
-  void render(const std::optional<ComputationalGraph>& graph) override;
+  ActionPacket render(const std::optional<ComputationalGraph>& graph) override;
 
   /* Handle 'up' keystroke.
    */
@@ -31,11 +31,6 @@ class TestPanel : public PanelBase
   /* Handle 'down' keystroke.
    */
   void handle_key_down() override;
-
-  /* Handle 'enter' keystroke.
-   */
-  void handle_enter() override;
-
 
 }; // class TestPanel
 

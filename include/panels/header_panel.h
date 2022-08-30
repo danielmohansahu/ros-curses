@@ -34,7 +34,7 @@ class HeaderPanel : public PanelBase
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */
-  void render(const std::optional<ComputationalGraph>&) override;
+  ActionPacket render(const std::optional<ComputationalGraph>&) override;
 
   /* Handle 'up' keystroke.
    *
@@ -47,13 +47,6 @@ class HeaderPanel : public PanelBase
    * Disabled: we should never be 'active'
    */
   void handle_key_down() override {};
-
-  /* Handle 'enter' keystroke.
-   *
-   * Disabled: we should never be 'active'
-   */
-  void handle_enter() override {};
-
 
 }; // class HeaderPanel
 

@@ -15,7 +15,7 @@ extern char **environ;
 namespace ros_curses::panels
 {
 
-void InitializationPanel::render(const std::optional<ComputationalGraph>&)
+ActionPacket InitializationPanel::render(const std::optional<ComputationalGraph>&)
 {
   // let the user know we haven't received any information
   print_line(2, " No ROS connection found; waiting...");
@@ -32,6 +32,9 @@ void InitializationPanel::render(const std::optional<ComputationalGraph>&)
 
   // redraw border (it might've gotten messed up)
   draw_border();
+
+  // no user action required
+  return NULL_ACTION;
 }
 
 

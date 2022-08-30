@@ -38,7 +38,7 @@ class HelpPanel : public PanelBase
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */
-  void render(const std::optional<ComputationalGraph>&) override;
+  ActionPacket render(const std::optional<ComputationalGraph>&) override;
 
   /* Handle 'up' keystroke.
    */
@@ -47,12 +47,6 @@ class HelpPanel : public PanelBase
   /* Handle 'down' keystroke.
    */
   void handle_key_down() override;
-
-  /* Handle 'enter' keystroke.
-   *
-   * We don't support 'ENTER'.
-   */
-  void handle_enter() override {};
 
   /* Override base class method to reset our IDX counter.
    */

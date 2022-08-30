@@ -37,7 +37,7 @@ class TopicListPanel : public PanelBase
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */
-  void render(const std::optional<ComputationalGraph>& graph) override;
+  ActionPacket render(const std::optional<ComputationalGraph>& graph) override;
 
   /* Handle 'up' keystroke.
    */
@@ -46,10 +46,6 @@ class TopicListPanel : public PanelBase
   /* Handle 'down' keystroke.
    */
   void handle_key_down() { _shift = 1; };
-
-  /* Handle 'enter' keystroke.
-   */
-  void handle_enter() override {};
 
   /* Override base class method to reset our state variables.
    */

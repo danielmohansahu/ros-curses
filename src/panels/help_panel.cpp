@@ -63,7 +63,7 @@ HelpPanel::HelpPanel()
 {
 }
 
-void HelpPanel::render(const std::optional<ComputationalGraph>&)
+ActionPacket HelpPanel::render(const std::optional<ComputationalGraph>&)
 {
   // completely redraw, to start with a blank slate
   redraw();
@@ -93,6 +93,9 @@ void HelpPanel::render(const std::optional<ComputationalGraph>&)
 
   // help panel header - not scrollable. this intentionally overrides part of the border
   mvwaddstr(_window, 0, 1, "ros-curses help");
+
+  // no user action required
+  return NULL_ACTION;
 }
 
 void HelpPanel::handle_key_up()

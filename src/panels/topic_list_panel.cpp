@@ -14,7 +14,7 @@
 namespace ros_curses::panels
 {
 
-void TopicListPanel::render(const std::optional<ComputationalGraph>& graph)
+ActionPacket TopicListPanel::render(const std::optional<ComputationalGraph>& graph)
 {
   // start from a blank slate
   redraw();
@@ -22,17 +22,17 @@ void TopicListPanel::render(const std::optional<ComputationalGraph>& graph)
 
   // if we don't have a graph we can't do anything
   if (!graph)
-    return;
+    return NULL_ACTION;
   
   // if we don't have topics we also can't do anything
   std::vector<std::string> topics;
   if (topics = graph->topic_list(); topics.size() == 0)
-    return;
+    return NULL_ACTION;
 
   // check if we can shift to a valid topic
   size_t topic_idx;
   if (const auto idx = _scroll.shift(_selection, topics, _shift); !idx)
-    return;
+    return NULL_ACTION;
   else
   {
     // update selections
@@ -69,6 +69,9 @@ void TopicListPanel::render(const std::optional<ComputationalGraph>& graph)
 
   // write panel name over border
   mvwaddnstr(_window, 0, 1, "ROS Topics", _cols - 2 * BORDER);
+
+  // indicate we want to display information about this topic
+  return {Action::SELECT_TOPIC, _selection};
 }
 
 void TopicListPanel::set_visible(const bool visible)

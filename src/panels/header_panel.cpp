@@ -10,7 +10,7 @@
 namespace ros_curses::panels
 {
 
-void HeaderPanel::render(const std::optional<ComputationalGraph>&)
+ActionPacket HeaderPanel::render(const std::optional<ComputationalGraph>&)
 {
   // add status information
   print_line(1, " Status: " + _status);
@@ -21,6 +21,7 @@ void HeaderPanel::render(const std::optional<ComputationalGraph>&)
 
   // add this after the border, to override it. I think it looks nice...
   mvwaddnstr(_window, 0, 1, "ros-curses: Command line introspection of the ROS computational graph.", _cols - 2 * BORDER);
+  return NULL_ACTION;
 }
 
 } // namespace ros_curses::panels

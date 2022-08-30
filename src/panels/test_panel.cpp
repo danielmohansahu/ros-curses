@@ -10,9 +10,9 @@
 namespace ros_curses::panels
 {
 
-void TestPanel::render(const std::optional<ComputationalGraph>& graph)
+ActionPacket TestPanel::render(const std::optional<ComputationalGraph>& graph)
 {
-
+    return NULL_ACTION;
 }
 
 void TestPanel::handle_key_up()
@@ -21,11 +21,6 @@ void TestPanel::handle_key_up()
 }
 
 void TestPanel::handle_key_down()
-{
-
-}
-
-void TestPanel::handle_enter()
 {
 
 }

@@ -18,6 +18,7 @@
 #include "panel.h"
 
 // ros_curses
+#include "../types.h"
 #include "../computational_graph.h"
 
 namespace ros_curses::panels
@@ -160,7 +161,7 @@ class PanelBase
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */
-  virtual void render(const std::optional<ComputationalGraph>& graph) = 0;
+  virtual ActionPacket render(const std::optional<ComputationalGraph>& graph) = 0;
 
   /* Handle 'up' keystroke.
    */
@@ -172,7 +173,7 @@ class PanelBase
 
   /* Handle 'enter' keystroke.
    */
-  virtual void handle_enter() = 0;
+  virtual ActionPacket handle_enter() { return NULL_ACTION; };
 
   /****************************** Core Panel API *****************************/
 
