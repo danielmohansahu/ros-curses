@@ -8,6 +8,7 @@
 #include "panels/help_panel.h"
 #include "panels/initialization_panel.h"
 #include "panels/test_panel.h"
+#include "panels/topic_info_panel.h"
 #include "panels/topic_list_panel.h"
 
 namespace ros_curses
@@ -30,7 +31,7 @@ Display::Display()
   _panels.emplace(PanelNames::HELP, new panels::HelpPanel());
   _panels.emplace(PanelNames::NODEINFO, new panels::TestPanel());
   _panels.emplace(PanelNames::NODELIST, new panels::TestPanel());
-  _panels.emplace(PanelNames::TOPICINFO, new panels::TestPanel());
+  _panels.emplace(PanelNames::TOPICINFO, new panels::TopicInfoPanel());
   _panels.emplace(PanelNames::TOPICLIST, new panels::TopicListPanel());
   _panels.emplace(PanelNames::SERVICEINFO, new panels::TestPanel());
   _panels.emplace(PanelNames::SERVICELIST, new panels::TestPanel());
