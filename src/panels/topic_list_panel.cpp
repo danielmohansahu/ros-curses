@@ -37,6 +37,9 @@ size_t TopicListPanel::update_selection(const std::vector<std::string>& names)
   }
   else
   {
+    // handle wrapping negative shifting
+    while (_shift < 0)
+      _shift += names.size() - 1;
     // get element _shift elements away from current selection    
     const size_t new_idx = (idx + _shift) % (names.size() - 1);
     _selection = names[new_idx];

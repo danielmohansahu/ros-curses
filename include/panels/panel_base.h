@@ -75,9 +75,9 @@ class ScrollRegion
     if (req_idx < begin)
       // shift back to include 'req_idx'
       return {begin - (begin - req_idx), end - (begin - req_idx)};
-    else if (req_idx > end)
+    else if (req_idx > end - 1)
       // shift forward to include 'req_idx'
-      return {begin + (req_idx - end), end + (req_idx - end)};
+      return {begin + (req_idx - end + 1), end + (req_idx - end + 1)};
     else
       // no shift needed!
       return {begin, end};
