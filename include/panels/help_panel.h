@@ -60,7 +60,7 @@ class HelpPanel : public PanelBase
 
   /* Override base class method to update our scroll calculations.
    */
-  virtual void move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x);
+  void move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x);
 
 }; // class TestPanel
 

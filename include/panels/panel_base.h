@@ -40,6 +40,10 @@ class ScrollRegion
   bool scroll_required(const size_t length) const{ return length > _size; }
 
   /* Calculate the visible indices in [0,length-1] subject to the start index constraint.
+   *
+   * Args:
+   *    length  : the number of rows we want to display
+   *    idx     : the starting index we want to display
    */
   std::pair<size_t,size_t> range_from_start(const size_t length, const size_t idx) const
   {
@@ -56,9 +60,28 @@ class ScrollRegion
   }
 
   /* Calculate the visible indices in [0,length-1] subject to keeping the given element visible.
+   *
+   * Args:
+   *    length    : the number of rows we want to display
+   *    start_idx : the starting index we last displayed
+   *    req_idx   : the required index that must be displayed
    */
-  std::pair<size_t,size_t> range_from_selection(const size_t length, const size_t start_idx, const size_t end_idx);
-  // @TODO
+  std::pair<size_t,size_t> range_from_selection(const size_t length, const size_t start_idx, const size_t req_idx) const
+  {
+    // get previously displayed range as a starting point
+    auto [begin, end] = range_from_start(length, start_idx);
+
+    // modify such that 'req_idx' is included
+    if (req_idx < begin)
+      // shift back to include 'req_idx'
+      return {begin - (begin - req_idx), end - (begin - req_idx)};
+    else if (req_idx > end)
+      // shift forward to include 'req_idx'
+      return {begin + (req_idx - end), end + (req_idx - end)};
+    else
+      // no shift needed!
+      return {begin, end};
+  }
 
 }; // class ScrollRegion
 
