@@ -68,30 +68,24 @@ void HelpPanel::render(const std::optional<ComputationalGraph>&)
   // completely redraw, to start with a blank slate
   redraw();
 
-  // visible region parameters
-  const size_t visible_start_idx = 1;
-  const size_t visible_end_buffer = 1;
-  const size_t visible_region_size = _rows - visible_start_idx - visible_end_buffer;
+  // the start index of our scrolling region (global coordinate frame) is just after the border
+  const size_t scroll_start_idx = BORDER;
 
-  // scroll parameters
-  const bool scroll_required = visible_region_size < _items.size();
-  _scroll_offset = (scroll_required) ? std::clamp(_scroll_offset, 0UL, _items.size() - visible_region_size) : 0;
-  
-  // loop parameters
-  const size_t start_idx = _scroll_offset;
-  const size_t end_idx = start_idx + std::min(visible_region_size - 1, _items.size());
+  // get visible range (local coordinate frame)
+  const auto [begin, end] = _scroll.range_from_start(_items.size(), _scroll_offset);
+  _scroll_offset = begin;
 
   // iterate through visible section of items
-  for (size_t i = start_idx; i != end_idx; ++i)
-    print_line(visible_start_idx + i - start_idx, _items[i]);
+  for (size_t i = begin; i != end; ++i)
+    print_line(scroll_start_idx + i - begin, _items[i]);
 
-  // add a little blurb if we're scrolling
-  if (scroll_required)
+  // add a little blurb at the end if we're scrolling
+  if (_scroll.scroll_required(_items.size()))
   {
-    if (_scroll_offset != _items.size() - visible_region_size)
-      print_line_center(visible_start_idx + end_idx - start_idx, "-- more --");
+    if (end < _items.size() - 1)
+      print_line_center(scroll_start_idx + end - begin, "-- more --");
     else
-      print_line_center(visible_start_idx + end_idx - start_idx, "-- end --");
+      print_line_center(scroll_start_idx + end - begin, "-- end --");
   }
 
   // redraw border, in case our lines overrode them
@@ -117,6 +111,13 @@ void HelpPanel::set_visible(const bool visible)
   // reset our selected index and call parent method
   _scroll_offset = 0;
   PanelBase::set_visible(visible);
+}
+
+void HelpPanel::move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x)
+{
+  // call parent method and update scroll size
+  PanelBase::move_and_resize(rows, cols, y, x);
+  _scroll.update_size(rows - BORDER * 2);
 }
 
 

@@ -22,6 +22,46 @@
 namespace ros_curses::panels
 {
 
+/* Helper class to calculate the visible part of a scrolling region.
+ */
+class ScrollRegion
+{
+ private:
+  // constraints
+  size_t _size {0};   // number of rows available
+
+ public:
+  /* Update available region size.
+   */
+  void update_size(const size_t size) { _size = size; }
+
+  /* Returns whether or not scrolling is required.
+   */
+  bool scroll_required(const size_t length) const{ return length > _size; }
+
+  /* Calculate the visible indices in [0,length-1] subject to the start index constraint.
+   */
+  std::pair<size_t,size_t> range_from_start(const size_t length, const size_t idx) const
+  {
+    // if we have enough space to show everything, return full range indices
+    if (length <= _size)
+      return {0, length - 1};
+    
+    // if [idx, idx + _size] is valid, return that
+    if (idx + _size < length)
+      return {idx, idx + _size - 1};
+
+    // just show the end
+    return {length - _size, length - 1};
+  }
+
+  /* Calculate the visible indices in [0,length-1] subject to keeping the given element visible.
+   */
+  std::pair<size_t,size_t> range_from_selection(const size_t length, const size_t start_idx, const size_t end_idx);
+  // @TODO
+
+}; // class ScrollRegion
+
 /* Abstract base class for a Panel.
  *
  * This class implements some of the core curses-specific
@@ -91,7 +131,7 @@ class PanelBase
 
   /* Resize to the given dimensions and move to the given location.
    */
-  void move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x);
+  virtual void move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x);
 
   /*************************** Useful Utilities API **************************/
 
