@@ -70,6 +70,10 @@ class Display
    */
   void supersede(const PanelNames panel, const bool supersede);
 
+  /* Process panel desired action.
+   */
+  void process_action(const ActionPacket& packet);
+
   /* Process user input, returning the desired action if not applicable to visualization.
    */
   Action process_user_input();

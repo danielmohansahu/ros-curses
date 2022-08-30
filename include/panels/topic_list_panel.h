@@ -21,9 +21,6 @@ class TopicListPanel : public PanelBase
 {
  private:
 
-  // currently selected object
-  std::optional<std::string> _selection;
-
   // amount to shift to select next node (expected -1,1, but forward compatible)
   int _shift {0};
 

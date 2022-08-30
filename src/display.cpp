@@ -99,7 +99,7 @@ ros_curses::Action Display::process(const std::optional<ros_curses::Computationa
     // process incoming data
     for (auto& kv : _panels)
       if (kv.second->visible())
-        kv.second->render(graph);
+        process_action(kv.second->render(graph));
     _header_panel->set_status("connected");
     _header_panel->render(graph);
   }
@@ -113,6 +113,51 @@ ros_curses::Action Display::process(const std::optional<ros_curses::Computationa
 
   // return action
   return action;
+}
+
+void Display::process_action(const ActionPacket& packet)
+{
+  // perform the given action requested by a panel
+  if (const auto& [action, data] = packet; action == Action::NONE)
+    return;
+  else if(action == Action::EXIT)
+    // @TODO should this be allowed?
+    return;
+  else if (action == Action::SELECT_NODE)
+    _panels[PanelNames::NODEINFO]->select(data);
+  else if (action == Action::SELECT_TOPIC)
+    _panels[PanelNames::TOPICINFO]->select(data);
+  else if (action == Action::SELECT_SERVICE)
+    _panels[PanelNames::SERVICEINFO]->select(data);
+  else if (action == Action::SELECT_PARAM)
+    _panels[PanelNames::PARAMINFO]->select(data);
+  else if (action == Action::DISPLAY_NODE)
+  {
+    show_displays(PanelNames::NODELIST, PanelNames::NODEINFO);
+    _panels[PanelNames::NODELIST]->select(data);
+    _panels[PanelNames::NODEINFO]->select(data);
+  }
+  else if (action == Action::DISPLAY_TOPIC)
+  {
+    show_displays(PanelNames::TOPICLIST, PanelNames::TOPICINFO);
+    _panels[PanelNames::TOPICLIST]->select(data);
+    _panels[PanelNames::TOPICINFO]->select(data);
+  }
+  else if (action == Action::DISPLAY_SERVICE)
+  {
+    show_displays(PanelNames::SERVICELIST, PanelNames::SERVICEINFO);
+    _panels[PanelNames::SERVICELIST]->select(data);
+    _panels[PanelNames::SERVICEINFO]->select(data);
+  }
+  else if (action == Action::DISPLAY_PARAM)
+  {
+    show_displays(PanelNames::PARAMLIST, PanelNames::PARAMINFO);
+    _panels[PanelNames::PARAMLIST]->select(data);
+    _panels[PanelNames::PARAMINFO]->select(data);
+  }
+  else
+    // shouldn't get here
+    assert(false);
 }
 
 ros_curses::Action Display::process_user_input()

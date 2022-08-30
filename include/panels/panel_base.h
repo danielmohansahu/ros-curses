@@ -144,8 +144,8 @@ class PanelBase
   // hardcoded border size
   const uint8_t BORDER {1};
 
-  // current scroll amount
-  int _scroll_value {0};
+  // string 'selection' for general information; used by most panels for different purposes
+  std::optional<std::string> _selection;
 
   // completely redraw this panel, clearing all information
   void redraw();
@@ -175,6 +175,10 @@ class PanelBase
   /* Handle 'enter' keystroke.
    */
   virtual ActionPacket handle_enter() { return NULL_ACTION; };
+
+  /* Update selection variable.
+   */
+  virtual void select(const std::optional<std::string>& selection) { _selection = selection; };
 
   /****************************** Core Panel API *****************************/
 
