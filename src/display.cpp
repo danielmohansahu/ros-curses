@@ -187,6 +187,11 @@ ros_curses::Action Display::process_user_input()
     case KEY_DOWN:      // move selection down
       _panels.at(_active)->handle_key_down();
       break;
+    case KEY_ENTER:
+    case int('\n'):
+    case int('\r'):
+      process_action(_panels.at(_active)->handle_enter());
+      break;
     case KEY_LEFT:      // move selection left
     case KEY_RIGHT:     // move selection right
       switch_displays();
