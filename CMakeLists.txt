@@ -17,6 +17,8 @@ set(SRC_FILES
   src/panels/node_info_panel.cpp
   src/panels/node_list_panel.cpp
   src/panels/panel_base.cpp
+  src/panels/service_info_panel.cpp
+  src/panels/service_list_panel.cpp
   src/panels/test_panel.cpp
   src/panels/topic_info_panel.cpp
   src/panels/topic_list_panel.cpp

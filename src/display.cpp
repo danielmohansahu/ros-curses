@@ -9,6 +9,8 @@
 #include "panels/initialization_panel.h"
 #include "panels/node_info_panel.h"
 #include "panels/node_list_panel.h"
+#include "panels/service_info_panel.h"
+#include "panels/service_list_panel.h"
 #include "panels/test_panel.h"
 #include "panels/topic_info_panel.h"
 #include "panels/topic_list_panel.h"
@@ -35,8 +37,8 @@ Display::Display()
   _panels.emplace(PanelNames::NODELIST, new panels::NodeListPanel());
   _panels.emplace(PanelNames::TOPICINFO, new panels::TopicInfoPanel());
   _panels.emplace(PanelNames::TOPICLIST, new panels::TopicListPanel());
-  _panels.emplace(PanelNames::SERVICEINFO, new panels::TestPanel());
-  _panels.emplace(PanelNames::SERVICELIST, new panels::TestPanel());
+  _panels.emplace(PanelNames::SERVICEINFO, new panels::ServiceInfoPanel());
+  _panels.emplace(PanelNames::SERVICELIST, new panels::ServiceListPanel());
   _panels.emplace(PanelNames::PARAMINFO, new panels::TestPanel());
   _panels.emplace(PanelNames::PARAMLIST, new panels::TestPanel());
 
