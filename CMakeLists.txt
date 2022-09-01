@@ -14,6 +14,7 @@ set(SRC_FILES
   src/panels/header_panel.cpp
   src/panels/help_panel.cpp
   src/panels/initialization_panel.cpp
+  src/panels/node_info_panel.cpp
   src/panels/node_list_panel.cpp
   src/panels/panel_base.cpp
   src/panels/test_panel.cpp

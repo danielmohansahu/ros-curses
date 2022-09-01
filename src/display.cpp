@@ -7,6 +7,7 @@
 #include "display.h"
 #include "panels/help_panel.h"
 #include "panels/initialization_panel.h"
+#include "panels/node_info_panel.h"
 #include "panels/node_list_panel.h"
 #include "panels/test_panel.h"
 #include "panels/topic_info_panel.h"
@@ -30,7 +31,7 @@ Display::Display()
   // instantiate panels via std::unordered_map's autoconstruction
   _panels.emplace(PanelNames::INITIALIZATION, new panels::InitializationPanel());
   _panels.emplace(PanelNames::HELP, new panels::HelpPanel());
-  _panels.emplace(PanelNames::NODEINFO, new panels::TestPanel());
+  _panels.emplace(PanelNames::NODEINFO, new panels::NodeInfoPanel());
   _panels.emplace(PanelNames::NODELIST, new panels::NodeListPanel());
   _panels.emplace(PanelNames::TOPICINFO, new panels::TopicInfoPanel());
   _panels.emplace(PanelNames::TOPICLIST, new panels::TopicListPanel());

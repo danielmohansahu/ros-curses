@@ -93,6 +93,7 @@ class ComputationalGraph
     std::set<std::shared_ptr<Topic>> publications;
     std::set<std::shared_ptr<Topic>> subscriptions;
     std::set<std::shared_ptr<Service>> services;
+    std::set<std::shared_ptr<Param>> parameters;
     bool active {true};
 
     // construction by name only
