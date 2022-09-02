@@ -1,6 +1,8 @@
 # ros-curses
 
-`ros-curses` is a command line interface for debugging live [ROS](https://www.ros.org/) applications. It is based on [ncurses](https://en.wikipedia.org/wiki/Ncurses). This project was prompted by the frustration of the author in repeatedly running successive commands like `rostopic info ...`
+`ros_curses` is still in active development, and subject to large changes! Use at your own risk.
+
+`ros-curses` is a command line interface for debugging live [ROS](https://www.ros.org/) applications. It is based on [ncurses](https://en.wikipedia.org/wiki/Ncurses). This project was prompted by the frustration of the author in repeatedly running successive commands like `rostopic info ...`, `rosnode info -q ...`, etc.
 
 ### Installation
 
@@ -30,3 +32,13 @@ Run the executable via `ros-curses` (or `./ros-curses` if not installed). The GU
 ### Notes
 
 Currently only ROS1 is supported. I've architected things to make adding a ROS2 parser _somewhat_ easy, but some fundamental changes will be needed for representing the computational graph.
+
+Feature Roadmap:
+ - Flesh out "Info" panel displays to show more information (e.g. params in Node namespace)
+ - Add struct definitions where applicable (Topics, Services)
+ - Intuitive highlighting of common issues (unsubscribed topics, etc.)
+ - Add basic Topic panel tools, like an equivalent of `rostopic (hz, bw)`. Not `echo`.
+
+
+
+
