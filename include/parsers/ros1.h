@@ -92,6 +92,10 @@ class ROS1Parser
    */
   bool execute(const std::string& method, const XmlRpcValue& request, XmlRpcValue& response, XmlRpcValue& payload);
 
+  /* Flatten the hierarchical set of params into a list.
+   */
+  std::unordered_map<std::string, std::string> flatten_params(const std::string& ns, XmlRpc::XmlRpcValue xml) const;
+
   /* Convert the given XML representation to the STL equivalent. 
    */
   template <typename T>
