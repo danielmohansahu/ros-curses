@@ -62,16 +62,29 @@ std::optional<ComputationalGraph> ROS1Parser::get_system_state()
 
   // construct XMLRPC request to ROS master
   XmlRpc::XmlRpcValue args, result, payload;
-  args[0] = "ros_curses";
+  args[0] = _name;
 
   if (execute("getSystemState", args, result, payload))
-    return ComputationalGraph(xml_to_stl(payload[0]), xml_to_stl(payload[1]), xml_to_stl(payload[2]));
+    return ComputationalGraph(xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[0]),
+                              xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[1]),
+                              xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[2]));
   return std::nullopt;
 }
 
 bool ROS1Parser::get_system_params(ComputationalGraph& graph)
 {
-  // I am a stub
+  XmlRpc::XmlRpcValue params, result, payload;
+  params[0] = _name;
+  params[1] = "/";    // root namespace of all parameters
+
+  if (!execute("getParam", params, result, payload))
+    return false;
+
+  // convert to map of strings
+  const auto param_map = xml_to_stl<std::unordered_map<std::string,std::string>>(payload);
+
+  // hand these off to the graph and return success
+  graph.merge_params(param_map);
   return true;
 }
 
@@ -118,35 +131,62 @@ bool ROS1Parser::execute(const std::string& method, const XmlRpc::XmlRpcValue& r
   return true;
 }
 
-std::vector<std::pair<std::string, std::vector<std::string>>> ROS1Parser::xml_to_stl(XmlRpc::XmlRpcValue& xml) const
+
+template <typename T>
+T ROS1Parser::xml_to_stl(XmlRpc::XmlRpcValue xml) const
 {
-  // sanity checks
-  assert(xml.getType() == XmlRpcValue::TypeArray);
 
-  // initialize result
-  std::vector<std::pair<std::string, std::vector<std::string>>> result;
-
-  // perform conversion from XML to STL vectors/strings
-  for (size_t i = 0; i != xml.size(); ++i)
+  // check what type we want to cast this as
+  if constexpr (std::is_same_v<T, std::string>)
   {
-    // more sanity checks
-    assert(xml[i].size() == 2);
-    assert(xml[i][0].getType() == XmlRpcValue::TypeString);
-    assert(xml[i][1].getType() == XmlRpcValue::TypeArray);
+    // if this is already a string, cast it directl
+    if (xml.getType() == XmlRpcValue::TypeString)
+      return static_cast<std::string>(xml);
 
-    // prep subvector
-    auto& it = result.emplace_back(xml[i][0], std::vector<std::string>());
-
-    // iterate through subvector
-    for (size_t j = 0; j != xml[i][1].size(); ++j)
-    {
-      assert(xml[i][1][j].getType() == XmlRpcValue::TypeString);
-      it.second.push_back(static_cast<std::string>(xml[i][1][j]));
-    }
+    // otherwise, we expect it to be a nested structure, which we'll resolve recursively
+    assert(xml.getType() == XmlRpcValue::TypeStruct && xml.size() == 1);
+    return static_cast<std::string>(xml.begin()->first) + "/" + xml_to_stl<std::string>(xml.begin()->second);
   }
+  else if constexpr (is_pair<T>::value)
+  {
+    // pairs can only be created from TypeArrays of size 2
+    assert(xml.getType() == XmlRpcValue::TypeArray && xml.size() == 2);
 
-  // return result
-  return result;
+    // cast as a pair
+    return std::pair(xml_to_stl<typename T::first_type>(xml[0]), xml_to_stl<typename T::second_type>(xml[1]));
+  }  
+  else if constexpr (is_vector<T>::value)
+  {
+    // vectors are a little more complicated - we can only conver them from TypeArrays
+    assert(xml.getType() == XmlRpcValue::TypeArray);
+
+    // initialize result
+    T result;
+    result.reserve(xml.size());
+
+    // recursively populate this vector
+    for (size_t i = 0; i != xml.size(); ++i)
+      result.emplace_back(xml_to_stl<typename T::value_type>(xml[i]));
+    return result;
+  }
+  else if constexpr (is_unordered_map<T>::value)
+  {
+    // maps can only be created from TypeStructs
+    assert(xml.getType() == XmlRpcValue::TypeStruct);
+
+    // initialize result
+    T result;
+    result.reserve(xml.size());
+
+    // // recursively populate this struct
+    for (auto it = xml.begin(); it != xml.end(); ++it)
+      result.emplace(xml_to_stl<typename T::key_type>(it->first), xml_to_stl<typename T::mapped_type>(it->second));
+    return result;
+  }
+  else
+  {
+    static_assert(always_false<T>, "Invalid XML type conversion requested.");
+  }
 }
 
 } // namespace ros_curses
