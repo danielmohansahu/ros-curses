@@ -32,34 +32,53 @@ ROS1Parser::ROS1Parser()
   _client = std::make_unique<XmlRpcClient>(_host.c_str(), _port, "/");
 }
 
-bool ROS1Parser::connected() const
-{
-  return _connected;
-}
-
 std::optional<ComputationalGraph> ROS1Parser::poll()
 {
+  // set current graph to disconnected; we'll update if it's active
+  if (_graph)
+    _graph->set_connected(false);
+
+  if (auto new_graph = get_system_state(); new_graph)
+    if (get_system_params(*new_graph))
+      if (get_message_types(*new_graph))
+      {
+        // success! merge this new data (or replace, for initial poll)
+        if (!_graph)
+          _graph = new_graph;
+        else
+          _graph->merge(*new_graph);
+        _graph->set_connected(true);
+      }
+
+  // always return the latest and greatest
+  return _graph;
+}
+
+std::optional<ComputationalGraph> ROS1Parser::get_system_state()
+{
+  // poll for the current system state (all published and subscribed topics / services and their nodes)
+  //  @TODO doesn't this ignore nodes who haven't published anything? How does that work? Are they guaranteed
+  //  to publish to /rosout?
+
   // construct XMLRPC request to ROS master
   XmlRpc::XmlRpcValue args, result, payload;
   args[0] = "ros_curses";
 
-  if (_connected = execute("getSystemState", args, result, payload); _connected)
-  {
-    // construct a new CG from this payload
-    const auto new_graph = ComputationalGraph(
-      xml_to_stl(payload[0]), xml_to_stl(payload[1]), xml_to_stl(payload[2]));
+  if (execute("getSystemState", args, result, payload))
+    return ComputationalGraph(xml_to_stl(payload[0]), xml_to_stl(payload[1]), xml_to_stl(payload[2]));
+  return std::nullopt;
+}
 
-    // merge it into our existing graph (or replace if it's our first)
-    if (!_graph)
-      _graph = new_graph;
-    else
-      _graph->merge(new_graph);
-  }
-  else if (_graph)
-    _graph->set_connected(false);
+bool ROS1Parser::get_system_params(ComputationalGraph& graph)
+{
+  // I am a stub
+  return true;
+}
 
-  // always return the latest and greatest
-  return _graph;
+bool ROS1Parser::get_message_types(ComputationalGraph& graph)
+{
+  // I am a stub
+  return true;
 }
 
 bool ROS1Parser::execute(const std::string& method, const XmlRpc::XmlRpcValue& request, XmlRpc::XmlRpcValue& response, XmlRpc::XmlRpcValue& payload)

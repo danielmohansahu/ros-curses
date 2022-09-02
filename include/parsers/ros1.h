@@ -36,7 +36,6 @@ class ROS1Parser
   std::regex _re_master {"^http://(\\w+):([0-9]+)$"};
   std::string _host {"localhost"};
   size_t _port {11311};
-  bool _connected {false};
 
   // persistent xml client
   std::unique_ptr<XmlRpcClient> _client;
@@ -44,15 +43,23 @@ class ROS1Parser
  public:
   ROS1Parser();
 
-  /* Return whether or not we have a connection.
-   */
-  bool connected() const;
-
   /* Update our current graph and return rendered CG.
    */
   std::optional<ComputationalGraph> poll();
 
  private:
+
+  /* Query the ros master for current publishers, subscribers, and services.
+   */
+  std::optional<ComputationalGraph> get_system_state();
+
+  /* Query the ros master for all ROS parameters.
+   */
+  bool get_system_params(ComputationalGraph& graph);
+
+  /* Query the ros master for the types of active messages / services.
+   */
+  bool get_message_types(ComputationalGraph& graph);
 
   /* Execute a call to the XMLRPC server (ROS master)
    * 
