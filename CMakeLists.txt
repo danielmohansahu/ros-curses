@@ -9,6 +9,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Curses REQUIRED COMPONENTS)
 find_library(CURSES_PANELS_LIBRARIES libpanel.so libpanelw.so HINTS ${NCURSES_LIBDIR} REQUIRED)
 
+# XMLRPC for ROS1
+find_package(xmlrpcpp REQUIRED)
+
 # core ros-curses GUI library
 set(SRC_FILES
   src/panels/header_panel.cpp
@@ -45,7 +48,7 @@ set(MAIN_FILES
   src/ros_curses.cpp
 )
 add_executable(ros-curses ${MAIN_FILES})
-target_link_libraries(ros-curses ${PROJECT_NAME}_gui)
+target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES})
 
 # include tests
 add_subdirectory(tests)
