@@ -139,12 +139,18 @@ T ROS1Parser::xml_to_stl(XmlRpc::XmlRpcValue xml) const
   // check what type we want to cast this as
   if constexpr (std::is_same_v<T, std::string>)
   {
-    // if this is already a string, cast it directl
+    // if this can be cast a string directly, do that
     if (xml.getType() == XmlRpcValue::TypeString)
       return static_cast<std::string>(xml);
+    else if (xml.getType() == XmlRpcValue::TypeBoolean)
+      return std::to_string(static_cast<bool>(xml));
+    else if (xml.getType() == XmlRpcValue::TypeInt)
+      return std::to_string(static_cast<int>(xml));
+    else if (xml.getType() == XmlRpcValue::TypeDouble)
+      return std::to_string(static_cast<double>(xml));
 
     // otherwise, we expect it to be a nested structure, which we'll resolve recursively
-    assert(xml.getType() == XmlRpcValue::TypeStruct && xml.size() == 1);
+    assert(xml.getType() == XmlRpcValue::TypeStruct);
     return static_cast<std::string>(xml.begin()->first) + "/" + xml_to_stl<std::string>(xml.begin()->second);
   }
   else if constexpr (is_pair<T>::value)
