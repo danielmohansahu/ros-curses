@@ -13,6 +13,7 @@ namespace ros_curses
 ComputationalGraph::ComputationalGraph(const std::vector<std::pair<std::string, std::vector<std::string>>>& publications,
                                        const std::vector<std::pair<std::string, std::vector<std::string>>>& subscriptions,
                                        const std::vector<std::pair<std::string, std::vector<std::string>>>& services)
+ : _connected(true)
 {
   // iterate through publications, updating internal list of topics / nodes
   for (const auto& [topic, publishers] : publications)
@@ -87,6 +88,9 @@ void ComputationalGraph::merge(const ComputationalGraph& other)
       _services[name] = service;
     else
       _services[name]->merge(*service);
+
+  // mark as active
+  _connected = true;
 }
 
 } // namespace ros_curses

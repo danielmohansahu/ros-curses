@@ -123,6 +123,7 @@ class ComputationalGraph
   ParamMap _params;
 
   // whether or not our last connection succeeded
+  bool _connected {false};
 
  public:
   /* Construct a new graph from the given ROS status message
@@ -135,6 +136,14 @@ class ComputationalGraph
   ComputationalGraph(const std::vector<std::pair<std::string, std::vector<std::string>>>& publications,
                      const std::vector<std::pair<std::string, std::vector<std::string>>>& subscriptions,
                      const std::vector<std::pair<std::string, std::vector<std::string>>>& services);
+
+  /* Getter for connectivity status.
+   */
+  bool connected() const { return _connected; }
+
+  /* Setter for connectivity status.
+   */
+  void set_connected(const bool status) { _connected = status; }
 
   /* Merge incoming graph with our internal representation, marking nodes as active / inactive.
    */

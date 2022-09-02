@@ -55,6 +55,8 @@ std::optional<ComputationalGraph> ROS1Parser::poll()
     else
       _graph->merge(new_graph);
   }
+  else if (_graph)
+    _graph->set_connected(false);
 
   // always return the latest and greatest
   return _graph;

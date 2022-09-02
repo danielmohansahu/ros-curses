@@ -105,7 +105,7 @@ ros_curses::Action Display::process(const std::optional<ros_curses::Computationa
     for (auto& kv : _panels)
       if (kv.second->visible())
         process_action(kv.second->render(graph));
-    _header_panel->set_status("connected");
+    _header_panel->set_status(graph->connected() ? "connected" : "disconnected");
     _header_panel->render(graph);
   }
 
