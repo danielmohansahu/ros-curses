@@ -36,18 +36,6 @@ class HeaderPanel : public PanelBase
    */
   ActionPacket render(const std::optional<ComputationalGraph>&) override;
 
-  /* Handle 'up' keystroke.
-   *
-   * Disabled: we should never be 'active'
-   */
-  void handle_key_up() override {};
-
-  /* Handle 'down' keystroke.
-   *
-   * Disabled: we should never be 'active'
-   */
-  void handle_key_down() override {};
-
 }; // class HeaderPanel
 
 } // namespace ros_curses::panels

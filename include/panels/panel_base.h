@@ -147,6 +147,12 @@ class PanelBase
   // string 'selection' for general information; used by most panels for different purposes
   std::optional<std::string> _selection;
 
+  // user requested amount to shift (sometimes unused)
+  int _shift {0};
+
+  // scrolling calculation helper class
+  ScrollRegion _scroll;
+
   // completely redraw this panel, clearing all information
   void redraw();
 
@@ -166,11 +172,11 @@ class PanelBase
 
   /* Handle 'up' keystroke.
    */
-  virtual void handle_key_up() = 0;
+  virtual void handle_key_up() { _shift = -1; };
 
   /* Handle 'down' keystroke.
    */
-  virtual void handle_key_down() = 0;
+  virtual void handle_key_down() { _shift = 1; };
 
   /* Handle 'enter' keystroke.
    */

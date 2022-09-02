@@ -24,14 +24,6 @@ class TestPanel : public PanelBase
    */
   ActionPacket render(const std::optional<ComputationalGraph>& graph) override;
 
-  /* Handle 'up' keystroke.
-   */
-  void handle_key_up() override;
-
-  /* Handle 'down' keystroke.
-   */
-  void handle_key_down() override;
-
 }; // class TestPanel
 
 } // namespace ros_curses::panels

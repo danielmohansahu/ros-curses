@@ -96,11 +96,4 @@ void TopicInfoPanel::set_visible(const bool visible)
   PanelBase::set_visible(visible);
 }
 
-void TopicInfoPanel::move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x)
-{
-  // call parent method and update scroll size
-  PanelBase::move_and_resize(rows, cols, y, x);
-  _scroll.update_size(rows - BORDER * 2);
-}
-
 } // namespace ros_curses::panels

@@ -24,9 +24,6 @@ class HelpPanel : public PanelBase
   // hardcoded scrollable section of display
   const std::vector<std::string> _items;
 
-  // scrolling indices calculation helper class
-  ScrollRegion _scroll;
-
   // currently selected index; determines oversized display section
   size_t _scroll_offset;
 
@@ -51,10 +48,6 @@ class HelpPanel : public PanelBase
   /* Override base class method to reset our IDX counter.
    */
   void set_visible(const bool visible) override;
-
-  /* Override base class method to update our scroll calculations.
-   */
-  void move_and_resize(const size_t rows, const size_t cols, const size_t y, const size_t x);
 
 }; // class TestPanel
 
