@@ -38,6 +38,8 @@ Feature Roadmap:
  - Add struct definitions where applicable (Topics, Services)
  - Intuitive highlighting of common issues (unsubscribed topics, etc.)
  - Add basic Topic panel tools, like an equivalent of `rostopic (hz, bw)`. Not `echo`.
+ - Add paging via PGUP / PGDOWN, reverse tabbing, etc.
+ - Allow filtering of current selection (vim style; prompted by '/')
 
 
 
