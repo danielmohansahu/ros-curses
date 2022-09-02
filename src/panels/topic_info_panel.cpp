@@ -26,9 +26,9 @@ ActionPacket TopicInfoPanel::render(const std::optional<ComputationalGraph>& gra
   // get a list of all this topic's information as tuples
   std::vector<std::pair<std::string,std::string>> fields;
   for (const auto& pub : topic->publishers)
-    fields.emplace_back("publisher", pub->name);
+    fields.emplace_back("publisher", pub);
   for (const auto& sub : topic->subscribers)
-    fields.emplace_back("subscriber", sub->name);
+    fields.emplace_back("subscriber", sub);
 
   // header information
   size_t current_idx = 1;

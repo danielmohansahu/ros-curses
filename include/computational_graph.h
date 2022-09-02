@@ -22,8 +22,6 @@ namespace ros_curses
 class ComputationalGraph
 {
  public:
-  // forward declarations
-  struct Node;
 
   /* Internal representation of a ROS Topic.
    */
@@ -31,8 +29,8 @@ class ComputationalGraph
   {
     const std::string name;
     std::string type;
-    std::set<std::shared_ptr<Node>> publishers;
-    std::set<std::shared_ptr<Node>> subscribers;
+    std::set<std::string> publishers;
+    std::set<std::string> subscribers;
     bool active {true};
 
     // construction by name only
@@ -56,7 +54,7 @@ class ComputationalGraph
   {
     const std::string name;
     std::string type;
-    std::set<std::shared_ptr<Node>> advertisers;
+    std::set<std::string> advertisers;
     bool active {true};
 
     // construction by name only
@@ -90,10 +88,10 @@ class ComputationalGraph
   {
     const std::string name;
     std::string namespace_;
-    std::set<std::shared_ptr<Topic>> publications;
-    std::set<std::shared_ptr<Topic>> subscriptions;
-    std::set<std::shared_ptr<Service>> services;
-    std::set<std::shared_ptr<Param>> parameters;
+    std::set<std::string> publications;
+    std::set<std::string> subscriptions;
+    std::set<std::string> services;
+    std::set<std::string> parameters;
     bool active {true};
 
     // construction by name only

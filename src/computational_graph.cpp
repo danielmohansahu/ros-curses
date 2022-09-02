@@ -24,8 +24,8 @@ ComputationalGraph::ComputationalGraph(const std::vector<std::pair<std::string, 
       if (_topics.find(topic) == _topics.end())
         _topics[topic] = std::make_shared<Topic>(topic);
 
-      _nodes.at(publisher)->publications.insert(_topics.at(topic));
-      _topics.at(topic)->publishers.insert(_nodes.at(publisher));
+      _nodes.at(publisher)->publications.insert(_topics.at(topic)->name);
+      _topics.at(topic)->publishers.insert(_nodes.at(publisher)->name);
     }
 
   // iterate through subscriptions, updating internal list of topics / nodes
@@ -38,8 +38,8 @@ ComputationalGraph::ComputationalGraph(const std::vector<std::pair<std::string, 
       if (_topics.find(topic) == _topics.end())
         _topics[topic] = std::make_shared<Topic>(topic);
 
-      _nodes.at(subscriber)->subscriptions.insert(_topics.at(topic));
-      _topics.at(topic)->subscribers.insert(_nodes.at(subscriber));
+      _nodes.at(subscriber)->subscriptions.insert(_topics.at(topic)->name);
+      _topics.at(topic)->subscribers.insert(_nodes.at(subscriber)->name);
     }
 
   // iterate through services, updating internal list of services / nodes
@@ -52,8 +52,8 @@ ComputationalGraph::ComputationalGraph(const std::vector<std::pair<std::string, 
       if (_services.find(service) == _services.end())
         _services[service] = std::make_shared<Service>(service);
 
-      _nodes.at(advertiser)->services.insert(_services.at(service));
-      _services.at(service)->advertisers.insert(_nodes.at(advertiser));
+      _nodes.at(advertiser)->services.insert(_services.at(service)->name);
+      _services.at(service)->advertisers.insert(_nodes.at(advertiser)->name);
     }
 }
 

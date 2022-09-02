@@ -29,13 +29,13 @@ ActionPacket NodeInfoPanel::render(const std::optional<ComputationalGraph>& grap
   // get a list of all this topic's information as tuples
   std::vector<std::pair<std::string,std::string>> fields;
   for (const auto& pub : node->publications)
-    fields.emplace_back("publication", pub->name);
+    fields.emplace_back("publication", pub);
   for (const auto& sub : node->subscriptions)
-    fields.emplace_back("subscription", sub->name);
+    fields.emplace_back("subscription", sub);
   for (const auto& srv : node->services)
-    fields.emplace_back("service", srv->name);
+    fields.emplace_back("service", srv);
   for (const auto& param : node->parameters)
-    fields.emplace_back("param", param->name);
+    fields.emplace_back("param", param);
 
   // header information
   size_t current_idx = 1;

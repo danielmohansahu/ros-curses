@@ -26,7 +26,7 @@ ActionPacket ServiceInfoPanel::render(const std::optional<ComputationalGraph>& g
   // get a list of all this topic's information as tuples
   std::vector<std::pair<std::string,std::string>> fields;
   for (const auto& node : service->advertisers)
-    fields.emplace_back("advertiser", node->name);
+    fields.emplace_back("advertiser", node);
 
   // header information
   size_t current_idx = 1;
