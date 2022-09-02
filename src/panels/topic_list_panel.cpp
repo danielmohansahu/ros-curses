@@ -50,15 +50,7 @@ ActionPacket TopicListPanel::render(const std::optional<ComputationalGraph>& gra
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-  {
-    // format display
-    auto format = A_NORMAL;
-    if (i == topic_idx)
-      format = A_STANDOUT;
-    else if (!graph->topics().at(topics[i])->active)
-      format |= A_DIM;
-    print_line(scroll_start_idx + i - begin, " - " + topics[i], format);
-  }
+    print_line(scroll_start_idx + i - begin, " - " + topics[i], format(i == topic_idx, !graph->topics().at(topics[i])->active));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(topics.size()))

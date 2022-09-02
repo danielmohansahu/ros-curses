@@ -50,15 +50,7 @@ ActionPacket ServiceListPanel::render(const std::optional<ComputationalGraph>& g
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-  {
-    // format display
-    auto format = A_NORMAL;
-    if (i == service_idx)
-      format = A_STANDOUT;
-    else if (!graph->services().at(services[i])->active)
-      format |= A_DIM;
-    print_line(scroll_start_idx + i - begin, " - " + services[i], format);
-  }
+    print_line(scroll_start_idx + i - begin, " - " + services[i], format(i == service_idx, !graph->services().at(services[i])->active));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(services.size()))

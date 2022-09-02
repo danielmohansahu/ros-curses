@@ -4,6 +4,9 @@
  * 
  */
 
+// STL
+#include <assert.h>
+
 // ros_curses
 #include "panels/panel_base.h"
 
@@ -43,6 +46,22 @@ void PanelBase::draw_border()
     box(_window, ACS_VLINE, ACS_HLINE);
   else
     box(_window, '|', '-');
+}
+
+int PanelBase::format(const bool selected, const bool zombie) const
+{
+  // highlight based on available information
+  if (!selected && !zombie)
+    return A_NORMAL;
+  else if (!selected && zombie)
+    return A_DIM;
+  else if (selected && !_active)
+    return A_STANDOUT | A_DIM;
+  else if (selected && _active)
+    return A_STANDOUT;
+
+  // we made a programming mistake if we get here
+  assert(false);
 }
 
 void PanelBase::set_active(const bool active)

@@ -50,15 +50,7 @@ ActionPacket NodeListPanel::render(const std::optional<ComputationalGraph>& grap
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-  {
-    // format display
-    auto format = A_NORMAL;
-    if (i == node_idx)
-      format = A_STANDOUT;
-    else if (!graph->nodes().at(nodes[i])->active)
-      format |= A_DIM;
-    print_line(scroll_start_idx + i - begin, " - " + nodes[i], format);
-  }
+    print_line(scroll_start_idx + i - begin, " - " + nodes[i], format(i == node_idx, !graph->nodes().at(nodes[i])->active));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(nodes.size()))

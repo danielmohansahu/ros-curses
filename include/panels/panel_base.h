@@ -159,6 +159,14 @@ class PanelBase
   // redraw the border
   void draw_border();
 
+  /* get nominal formatting
+   *
+   * Args:
+   *    selected: Whether or not this line is actively highlighted.
+   *    zombie:   Whether or not this line is a zombie process.
+   */
+  int format(const bool selected = false, const bool zombie = false) const;
+
  public:
   // constructors
   PanelBase() : PanelBase(0, 0, 0, 0) {};

@@ -56,9 +56,7 @@ ActionPacket ServiceInfoPanel::render(const std::optional<ComputationalGraph>& g
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-    print_line(scroll_start_idx + i - begin,
-               fields[i].first + ": " + fields[i].second,
-               (i == highlighted_idx) ? A_STANDOUT : A_NORMAL);
+    print_line(scroll_start_idx + i - begin, fields[i].first + ": " + fields[i].second, format(i == highlighted_idx));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(fields.size()))
