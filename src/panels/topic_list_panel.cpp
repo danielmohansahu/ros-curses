@@ -62,7 +62,7 @@ ActionPacket TopicListPanel::render(const std::optional<ComputationalGraph>& gra
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(topics.size()))
-    print_line_center(scroll_start_idx + end - begin, (end < topics.size() - 1) ? "-- more --" : "-- end --");
+    print_line_center(scroll_start_idx + end - begin, (end < topics.size()) ? "-- more --" : "-- end --");
 
   // redraw border, in case it got borked
   draw_border();

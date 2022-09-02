@@ -82,7 +82,7 @@ void PanelBase::move_and_resize(const size_t rows, const size_t cols, const size
   replace_panel(_panel, _window);
 
   // update scroll region
-  _scroll.update_size(_rows - BORDER * 2);
+  _scroll.update_size(_rows - BORDER * 3);
 
   // actually redraw representation
   redraw();

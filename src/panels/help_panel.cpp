@@ -82,7 +82,7 @@ ActionPacket HelpPanel::render(const std::optional<ComputationalGraph>&)
   // add a little blurb at the end if we're scrolling
   if (_scroll.scroll_required(_items.size()))
   {
-    if (end < _items.size() - 1)
+    if (end < _items.size())
       print_line_center(scroll_start_idx + end - begin, "-- more --");
     else
       print_line_center(scroll_start_idx + end - begin, "-- end --");

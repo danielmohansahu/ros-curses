@@ -62,7 +62,7 @@ ActionPacket ServiceListPanel::render(const std::optional<ComputationalGraph>& g
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(services.size()))
-    print_line_center(scroll_start_idx + end - begin, (end < services.size() - 1) ? "-- more --" : "-- end --");
+    print_line_center(scroll_start_idx + end - begin, (end < services.size()) ? "-- more --" : "-- end --");
 
   // redraw border, in case it got borked
   draw_border();

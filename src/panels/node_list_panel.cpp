@@ -62,7 +62,7 @@ ActionPacket NodeListPanel::render(const std::optional<ComputationalGraph>& grap
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(nodes.size()))
-    print_line_center(scroll_start_idx + end - begin, (end < nodes.size() - 1) ? "-- more --" : "-- end --");
+    print_line_center(scroll_start_idx + end - begin, (end < nodes.size()) ? "-- more --" : "-- end --");
 
   // redraw border, in case it got borked
   draw_border();

@@ -63,10 +63,10 @@ class ScrollRegion
       // wrap negative shifting
       int shift_pos = shift;
       while (shift_pos < 0)
-        shift_pos += items.size() - 1;
+        shift_pos += items.size();
 
       // get element _shift elements away from current selection    
-      idx = (idx + shift_pos) % (items.size() - 1);
+      idx = (idx + shift_pos) % (items.size());
     }
     // return resulting index
     return idx;
@@ -82,14 +82,14 @@ class ScrollRegion
   {
     // if we have enough space to show everything, return full range indices
     if (length <= _size)
-      return {0, length - 1};
+      return {0, length};
     
     // if [idx, idx + _size] is valid, return that
     if (idx + _size < length)
-      return {idx, idx + _size - 1};
+      return {idx, idx + _size};
 
     // just show the end
-    return {length - _size, length - 1};
+    return {length - _size, length};
   }
 
   /* Calculate the visible indices in [0,length-1] subject to keeping the given element visible.
