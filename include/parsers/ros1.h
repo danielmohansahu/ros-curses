@@ -25,6 +25,9 @@ namespace ros_curses
 class ROS1Parser
 {
  private:
+  // convenience typdefs
+  using XmlRpcClient = XmlRpc::XmlRpcClient;
+  using XmlRpcValue = XmlRpc::XmlRpcValue;
 
   // local latest and greatest CG
   std::optional<ComputationalGraph> _graph;
@@ -33,13 +36,17 @@ class ROS1Parser
   std::regex _re_master {"^http://(\\w+):([0-9]+)$"};
   std::string _host {"localhost"};
   size_t _port {11311};
+  bool _connected {false};
+
+  // persistent xml client
+  std::unique_ptr<XmlRpcClient> _client;
 
  public:
   ROS1Parser();
 
   /* Return whether or not we have a connection.
    */
-  bool connected();
+  bool connected() const;
 
   /* Update our current graph and return rendered CG.
    */
@@ -52,8 +59,11 @@ class ROS1Parser
    * Adapted from:
    *  https://github.com/ros/ros_comm/blob/f5fa3a168760d62e9693f10dcb9adfffc6132d22/clients/roscpp/src/libros/master.cpp
    */
-  bool execute(const std::string& method, const XmlRpc::XmlRpcValue& request, XmlRpc::XmlRpcValue& response, XmlRpc::XmlRpcValue& payload);
+  bool execute(const std::string& method, const XmlRpcValue& request, XmlRpcValue& response, XmlRpcValue& payload);
 
+  /* Convert the given XML vector of string/vector<string> to the STL equivalent. 
+   */
+  std::vector<std::pair<std::string, std::vector<std::string>>> xml_to_stl(XmlRpcValue& xml) const;
 
 }; // namespace ROS1Parser
 
