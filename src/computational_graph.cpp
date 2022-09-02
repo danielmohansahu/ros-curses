@@ -33,7 +33,7 @@ ComputationalGraph::ComputationalGraph(const std::vector<std::pair<std::string, 
     }
 
   // iterate through subscriptions, updating internal list of topics / nodes
-  for (const auto& [topic, subscribers] : publications)
+  for (const auto& [topic, subscribers] : subscriptions)
     for (const auto& subscriber : subscribers)
     {
       // construct node / topic if not yet present
