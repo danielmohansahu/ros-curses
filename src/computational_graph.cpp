@@ -4,6 +4,9 @@
  * 
  */
 
+// STL
+#include <assert.h>
+
 // ros_curses
 #include "computational_graph.h"
 
@@ -91,6 +94,33 @@ void ComputationalGraph::merge(const ComputationalGraph& other)
 
   // mark as active
   _connected = true;
+}
+
+void ComputationalGraph::merge_params(const std::unordered_map<std::string, std::string>& params)
+{
+  // mark all current params as inactive (to distinguish params deleted from the server)
+  for (auto& kv : _params)
+    kv.second->active = false;
+
+  // iterate through all new params, updating values as necessary
+  for (const auto& [name, value] : params)
+  {
+    auto element = _params.find(name);
+    if (element == _params.end())
+    {
+      // construct a new param
+      const auto& res = _params.emplace(name, std::make_shared<Param>(name));
+
+      // sanity check this actually updated
+      assert(res.second);
+      element = res.first;
+    }
+
+    // update value and mark as active
+    element->second->value = value;
+    element->second->active = true;
+  }
+
 }
 
 } // namespace ros_curses

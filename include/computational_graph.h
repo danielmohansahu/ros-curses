@@ -78,8 +78,16 @@ class ComputationalGraph
     std::string name;
     std::string namespace_;
     std::string type;
+    std::string value;
     bool dynamic {false};
     bool active {true};
+
+    // construction by name only
+    Param() = delete;
+    explicit Param(const std::string& name_)
+      : name(name_), namespace_(name_.substr(0, name_.find_last_of('/'))), active(true)
+    {}
+
   }; // struct Param
 
   /* Internal representation of a ROS node.
@@ -148,6 +156,10 @@ class ComputationalGraph
   /* Merge incoming graph with our internal representation, marking nodes as active / inactive.
    */
   void merge(const ComputationalGraph& other);
+
+  /* Merge incoming params with our internal representation.
+   */
+  void merge_params(const std::unordered_map<std::string, std::string>& params);
 
   /* nodes structure accessor.
    */
