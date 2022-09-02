@@ -138,25 +138,25 @@ void Display::process_action(const ActionPacket& packet)
     _panels[PanelNames::PARAMINFO]->select(data);
   else if (action == Action::DISPLAY_NODE)
   {
-    show_displays(PanelNames::NODELIST, PanelNames::NODEINFO);
+    show_displays(PanelNames::NODEINFO, PanelNames::NODELIST);
     _panels[PanelNames::NODELIST]->select(data);
     _panels[PanelNames::NODEINFO]->select(data);
   }
   else if (action == Action::DISPLAY_TOPIC)
   {
-    show_displays(PanelNames::TOPICLIST, PanelNames::TOPICINFO);
+    show_displays(PanelNames::TOPICINFO, PanelNames::TOPICLIST);
     _panels[PanelNames::TOPICLIST]->select(data);
     _panels[PanelNames::TOPICINFO]->select(data);
   }
   else if (action == Action::DISPLAY_SERVICE)
   {
-    show_displays(PanelNames::SERVICELIST, PanelNames::SERVICEINFO);
+    show_displays(PanelNames::SERVICEINFO, PanelNames::SERVICELIST);
     _panels[PanelNames::SERVICELIST]->select(data);
     _panels[PanelNames::SERVICEINFO]->select(data);
   }
   else if (action == Action::DISPLAY_PARAM)
   {
-    show_displays(PanelNames::PARAMLIST, PanelNames::PARAMINFO);
+    show_displays(PanelNames::PARAMINFO, PanelNames::PARAMLIST);
     _panels[PanelNames::PARAMLIST]->select(data);
     _panels[PanelNames::PARAMINFO]->select(data);
   }
