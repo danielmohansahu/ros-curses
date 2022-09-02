@@ -21,7 +21,6 @@ add_executable(
 )
 target_link_libraries(
   dummy_test
-  ${PROJECT_NAME}
   GTest::gtest_main
 )
 
