@@ -53,7 +53,7 @@ add_executable(ros-curses ${MAIN_FILES})
 target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES})
 
 # install executable
-install(TARGETS ros-curses DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR})
+install(TARGETS ros-curses DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # include tests
 # add_subdirectory(tests)
