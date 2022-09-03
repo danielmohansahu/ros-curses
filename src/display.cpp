@@ -226,7 +226,7 @@ ros_curses::Action Display::process_user_input()
         return action;
       default:
         // pass through
-        _panels.at(_active)->update_filter('0' + ch);
+        _panels.at(_active)->update_filter(ch);
         return action;
     }
 

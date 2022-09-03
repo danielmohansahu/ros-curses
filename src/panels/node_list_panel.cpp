@@ -26,8 +26,28 @@ ActionPacket NodeListPanel::render(const std::optional<ComputationalGraph>& grap
     return NULL_ACTION;
   
   // if we don't have topics we also can't do anything
+  std::vector<std::string> all_nodes;
+  if (all_nodes = graph->node_list(); all_nodes.size() == 0)
+    return NULL_ACTION;
+
+  // optionally filter nodes
   std::vector<std::string> nodes;
-  if (nodes = graph->node_list(); nodes.size() == 0)
+  nodes.reserve(all_nodes.size());
+  if (_filter && _filter->size() != 0)
+  {
+    for (const auto& node : all_nodes)
+      if (node.find(*_filter) != std::string::npos)
+        nodes.emplace_back(node);
+  }
+  else
+    nodes = all_nodes;
+
+  // add a little blurb if we're filtering
+  if (_filter)
+    print_line(_rows - BORDER * 2, "Showing matches for: '" + *_filter + "'");
+
+  // if we filtered everything there's not much to do
+  if (nodes.size() == 0)
     return NULL_ACTION;
 
   // construct a list of indices for the visible region

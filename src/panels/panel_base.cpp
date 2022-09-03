@@ -69,6 +69,8 @@ void PanelBase::set_active(const bool active)
   // put on top of the panel stack, if active
   if (active)
     top_panel(_panel);
+  else
+    clear_filter();
 
   // set state and redraw
   _active = active;
