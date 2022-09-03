@@ -37,6 +37,10 @@ class ScrollRegion
   // last unique selection
   std::any _selection;
 
+  // user request "step" and "page" distance and direction
+  int _step {0};
+  int _page {0};
+
  public:
   // specify mode during construction
   explicit ScrollRegion(const bool selectable) : _selectable(selectable) {}
@@ -46,6 +50,8 @@ class ScrollRegion
   {
     _selection.reset();
     _start_index = 0;
+    _step = 0;
+    _page = 0;
   }
 
   // update our current size
@@ -60,6 +66,12 @@ class ScrollRegion
       _selection = *selection;
   }
 
+  // step the current selection / display
+  void step(const int step) { _step = step; }
+  
+  // page the current selection / display
+  void page(const int page) { _page = page; }
+
   // return true if we need to scroll
   bool scroll_required(const size_t length) const { return length > _size; }
 
@@ -68,14 +80,13 @@ class ScrollRegion
    * Args:
    *    selectables: Vector of unique selectable items
    *    selectable_indices: The indices of our selectable items in the broader vector (with non-selectable entries)
-   *    step: The amount and direction to increment our current selection
-   *    page: Amount and direction to page
+   *    length: The full size of the desired visible region.
    * 
    * Returns:
-   *    Tuple containing the start index, end signal, and selected index in the vector of selectable_indices.
+   *    Tuple containing the start index, end signal, selected index (in 'selectables') and selected index (in [0,length)).
    */
   template <typename T>
-  std::tuple<size_t,size_t,size_t> update(const std::vector<T>& selectables, const std::vector<size_t>& selectable_indices, const int step = 0, const int page = 0)
+  std::tuple<size_t,size_t,size_t,size_t> update(const std::vector<T>& selectables, const std::vector<size_t>& selectable_indices, const size_t length)
   {
     // sanity check
     assert(_selectable);
@@ -90,19 +101,23 @@ class ScrollRegion
     size_t selection_idx = std::distance(selectables.begin(), std::find(selectables.begin(), selectables.end(), std::any_cast<T>(_selection)));
 
     // check if the user wants to move the selection index
-    selection_idx = std::clamp(static_cast<int>(selection_idx) + step, 0, static_cast<int>(selectables.size()) - 1);
-    selection_idx = std::clamp(static_cast<int>(selection_idx) + static_cast<int>(_size) * page, 0, static_cast<int>(selectables.size()) - 1);
+    selection_idx = std::clamp(static_cast<int>(selection_idx) + _step, 0, static_cast<int>(selectables.size()) - 1);
+    selection_idx = std::clamp(static_cast<int>(selection_idx) + static_cast<int>(_size) * _page, 0, static_cast<int>(selectables.size()) - 1);
+
+    // update state
+    _step = 0;
+    _page = 0;
     _selection = selectables[selection_idx];
 
     // find the selection index in the full text region
-    size_t required_idx = std::distance(selectable_indices.begin(), std::find(selectable_indices.begin(), selectable_indices.end(), selection_idx));
+    size_t required_idx = selectable_indices[selection_idx];
 
     // handle trivial case : we have enough space
-    if (!scroll_required(selectable_indices.size()))
+    if (!scroll_required(length))
     {
       // reset starting index
       _start_index = 0;
-      return {_start_index, selectable_indices.size(), required_idx};
+      return {_start_index, length, selection_idx, required_idx};
     }
 
     // shift the starting index location until the required index is in view
@@ -115,20 +130,18 @@ class ScrollRegion
     // else no shift needed!
 
     // return indices
-    return {_start_index, _start_index + _size, required_idx};
+    return {_start_index, _start_index + _size, selection_idx, required_idx};
   }
 
   /* Get the updated bounds of our visible region for non-selectable mode.
    *
    * Args:
    *    length: The amount of lines we wish to display.
-   *    step: The amount and direction to increment our current selection
-   *    page: Amount and direction to page
    * 
    * Returns:
    *    Start index and end signal of viewable region.
    */
-  std::pair<size_t,size_t> update(const size_t length, const int step = 0, const int page = 0)
+  std::pair<size_t,size_t> update(const size_t length)
   {
     // sanity check
     assert(!_selectable);
@@ -142,8 +155,12 @@ class ScrollRegion
     }
 
     // we have to scroll; check if the user also wants to move the indices
-    _start_index = std::clamp(static_cast<int>(_start_index) + step, 0, static_cast<int>(length - _size));
-    _start_index = std::clamp(static_cast<int>(_start_index) + static_cast<int>(_size) * page, 0, static_cast<int>(length - _size));
+    _start_index = std::clamp(static_cast<int>(_start_index) + _step, 0, static_cast<int>(length - _size));
+    _start_index = std::clamp(static_cast<int>(_start_index) + static_cast<int>(_size) * _page, 0, static_cast<int>(length - _size));
+
+    // reset state
+    _step = 0;
+    _page = 0;
 
     // return the visible section from _start_index to _start_index + _size
     return {_start_index, _start_index + _size};

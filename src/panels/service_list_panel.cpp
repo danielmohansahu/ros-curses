@@ -34,12 +34,11 @@ ActionPacket ServiceListPanel::render(const std::optional<ComputationalGraph>& g
   std::iota(indices.begin(), indices.end(), 0);
 
   // get the region bounds
-  const auto [begin, end, selection_idx] = _scroll.update(services, indices, _step, _page);
-  _step = 0; _page = 0;
+  const auto [begin, end, selection_idx, highlight_idx] = _scroll.update(services, indices, services.size());
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-    print_line(BORDER + i - begin, " - " + services[i], format(i == selection_idx, !graph->services().at(services[i])->active));
+    print_line(BORDER + i - begin, " - " + services[i], format(i == highlight_idx, !graph->services().at(services[i])->active));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(services.size()))

@@ -51,12 +51,6 @@ class PanelBase
   // hardcoded border size
   const uint8_t BORDER {1};
 
-  // user requested amount to step (sometimes unused)
-  int _step {0};
-
-  // user requested amount to page (sometimes unused)
-  int _page {0};
-
   // scrolling calculation helper class
   ScrollRegion _scroll;
 
@@ -89,19 +83,19 @@ class PanelBase
 
   /* Handle 'up' keystroke.
    */
-  virtual void handle_key_up() { _step = -1; };
+  virtual void handle_key_up() { _scroll.step(-1); };
 
   /* Handle 'down' keystroke.
    */
-  virtual void handle_key_down() { _step = 1; };
+  virtual void handle_key_down() { _scroll.step(1); };
 
   /* Handle 'up' keystroke.
    */
-  virtual void handle_page_up() { _page = -1; };
+  virtual void handle_page_up() { _scroll.page(-1); };
 
   /* Handle 'down' keystroke.
    */
-  virtual void handle_page_down() { _page = 1; };
+  virtual void handle_page_down() { _scroll.page(1); };
 
   /* Handle 'enter' keystroke.
    */

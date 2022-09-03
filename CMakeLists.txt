@@ -34,7 +34,7 @@ set(SRC_FILES
 add_library(${PROJECT_NAME}_gui STATIC ${SRC_FILES})
 target_include_directories(${PROJECT_NAME}_gui PUBLIC include)
 target_link_libraries(${PROJECT_NAME}_gui ${CURSES_LIBRARIES} ${CURSES_PANELS_LIBRARIES})
-target_compile_options(${PROJECT_NAME}_gui PRIVATE -Wall -Werror -Wpedantic)
+target_compile_options(${PROJECT_NAME}_gui PRIVATE -Wall -Werror -Wpedantic -fconcepts)
 
 # demonstration executable for GUI testing
 set(DEMO_FILES

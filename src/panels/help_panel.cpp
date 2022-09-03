@@ -69,8 +69,7 @@ ActionPacket HelpPanel::render(const std::optional<ComputationalGraph>&)
   redraw();
 
   // get visible indices
-  const auto [begin, end] = _scroll.update(_items.size(), _step, _page);
-  _step = 0; _page = 0;
+  const auto [begin, end] = _scroll.update(_items.size());
 
   for (size_t i = begin; i != end; ++i)
     print_line(BORDER + i - begin, _items[i]);

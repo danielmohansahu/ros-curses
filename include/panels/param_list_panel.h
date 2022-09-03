@@ -33,6 +33,7 @@ class ParamListPanel : public PanelBase
   /* Update currently activated item.
    */
   virtual void select(const std::optional<std::string>& selection) override { _scroll.select(selection); };
+
 }; // class ParamListPanel
 
 } // namespace ros_curses::panels

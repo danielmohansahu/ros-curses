@@ -40,13 +40,12 @@ ActionPacket ServiceInfoPanel::render(const std::optional<ComputationalGraph>& g
   std::iota(indices.begin(), indices.end(), 0);
 
   // get the visible region bounds
-  const auto [begin, end, selection_idx] = _scroll.update(fields, indices, _step, _page);
-  _step = 0; _page = 0;
-  _sub_selection = fields[indices[selection_idx]];
+  const auto [begin, end, selection_idx, highlight_idx] = _scroll.update(fields, indices, fields.size());
+  _sub_selection = fields[selection_idx];
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-    print_line(current_idx + i - begin, fields[i].first + ": " + fields[i].second, format(i == selection_idx));
+    print_line(current_idx + i - begin, fields[i].first + ": " + fields[i].second, format(i == highlight_idx));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(fields.size()))

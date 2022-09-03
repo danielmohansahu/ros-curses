@@ -35,12 +35,11 @@ ActionPacket NodeListPanel::render(const std::optional<ComputationalGraph>& grap
   std::iota(indices.begin(), indices.end(), 0);
 
   // get the start -> end of the scrollable region, as well as current selection index
-  const auto [begin, end, selection_idx] = _scroll.update(nodes, indices, _step, _page);
-  _step = 0; _page = 0;
+  const auto [begin, end, selection_idx, highlight_idx] = _scroll.update(nodes, indices, nodes.size());
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-    print_line(BORDER + i - begin, " - " + nodes[i], format(i == selection_idx, !graph->nodes().at(nodes[i])->active));
+    print_line(BORDER + i - begin, " - " + nodes[i], format(i == highlight_idx, !graph->nodes().at(nodes[i])->active));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(nodes.size()))

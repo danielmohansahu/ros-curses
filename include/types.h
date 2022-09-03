@@ -46,6 +46,19 @@ enum Action
   DISPLAY_PARAM       // switch to PARAM panels, highlighting the given PARAM
 }; // enum Action
 
+/* Enumeration of all ROS Primitive Types from each other's perspectives.
+ */
+enum ROSType
+{
+  PUBLISHER,          // A ROS Publisher (node)
+  SUBSCRIBER,         // A ROS Subscriber (node)
+  ADVERTISER,         // A ROS Advertiser (node)
+  PUBLICATION,        // A ROS Publication (topic)
+  SUBSCRIPTION,       // A ROS Subscription (topic)
+  SERVICE,            // A ROS Service (service)
+  PARAMETER           // A ROS Parameter (param)
+}; // enum ROSType
+
 /* Structure dictating a desired action and required information.
  */
 using ActionPacket = std::pair<Action, std::optional<std::string>>;

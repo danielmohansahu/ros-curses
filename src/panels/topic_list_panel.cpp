@@ -34,12 +34,11 @@ ActionPacket TopicListPanel::render(const std::optional<ComputationalGraph>& gra
   std::iota(indices.begin(), indices.end(), 0);
 
   // get the region bounds
-  const auto [begin, end, selection_idx] = _scroll.update(topics, indices, _step, _page);
-  _step = 0; _page = 0;
+  const auto [begin, end, selection_idx, highlight_idx] = _scroll.update(topics, indices, topics.size());
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-    print_line(BORDER + i - begin, " - " + topics[i], format(i == selection_idx, !graph->topics().at(topics[i])->active));
+    print_line(BORDER + i - begin, " - " + topics[i], format(i == highlight_idx, !graph->topics().at(topics[i])->active));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(topics.size()))
