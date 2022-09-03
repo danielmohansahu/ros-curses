@@ -17,15 +17,15 @@ ActionPacket ParamInfoPanel::render(const std::optional<ComputationalGraph>& gra
   mvwaddnstr(_window, 0, 1, "ROS Param Summary", _cols - 2 * BORDER);
 
   // if we don't have a graph or topic selected we can't do anything
-  if (!graph || !_selection || graph->params().find(*_selection) == graph->params().end())
+  if (!graph || !_external_selection || graph->params().find(*_external_selection) == graph->params().end())
     return NULL_ACTION;
   
   // otherwise print some info about this topic
-  const auto& param = graph->params().at(*_selection);
+  const auto& param = graph->params().at(*_external_selection);
 
   // header information
   size_t current_idx = 1;
-  print_line(current_idx++, *_selection + ((param->active) ? " (active)" : " (inactive)"));
+  print_line(current_idx++, *_external_selection + ((param->active) ? " (active)" : " (inactive)"));
   print_line(current_idx++, "  Value: " + param->value);
   print_line(current_idx++, "");
 

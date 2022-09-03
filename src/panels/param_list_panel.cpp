@@ -29,32 +29,21 @@ ActionPacket ParamListPanel::render(const std::optional<ComputationalGraph>& gra
   if (params = graph->param_list(); params.size() == 0)
     return NULL_ACTION;
 
-  // check if we can shift to a valid topic
-  size_t param_idx;
-  if (const auto idx = _scroll.shift(_selection, params, _shift); !idx)
-    return NULL_ACTION;
-  else
-  {
-    // update selections
-    param_idx = *idx;
-    _selection = params[*idx];
-    _shift = 0;
-  }
-
-  // start of the scrollable region (global coordinates)
-  const size_t scroll_start_idx = BORDER;
+  // construct a list of indices for the visible region
+  std::vector<size_t> indices(params.size());
+  std::iota(indices.begin(), indices.end(), 0);
 
   // get the region bounds
-  const auto [begin, end] = _scroll.range_from_selection(params.size(), _last_start_idx, param_idx);
-  _last_start_idx = begin;
+  const auto [begin, end, selection_idx] = _scroll.update(params, indices, _step, _page);
+  _step = 0; _page = 0;
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-    print_line(scroll_start_idx + i - begin, " - " + params[i], format(i == param_idx, !graph->params().at(params[i])->active));
+    print_line(BORDER + i - begin, " - " + params[i], format(i == selection_idx, !graph->params().at(params[i])->active));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(params.size()))
-    print_line_center(scroll_start_idx + end - begin, (end < params.size()) ? "-- more --" : "-- end --");
+    print_line_center(BORDER + end - begin, (end < params.size()) ? "-- more --" : "-- end --");
 
   // redraw border, in case it got borked
   draw_border();
@@ -63,17 +52,7 @@ ActionPacket ParamListPanel::render(const std::optional<ComputationalGraph>& gra
   mvwaddnstr(_window, 0, 1, "ROS Params", _cols - 2 * BORDER);
 
   // indicate we want to display information about this topic
-  return {Action::SELECT_PARAM, _selection};
-}
-
-void ParamListPanel::set_visible(const bool visible)
-{
-  // reset our selected index
-  _shift = 0;
-  _selection = std::nullopt;
-
-  // call parent method
-  PanelBase::set_visible(visible);
+  return {Action::SELECT_PARAM, params[selection_idx]};
 }
 
 } // namespace ros_curses::panels

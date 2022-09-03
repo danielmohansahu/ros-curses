@@ -24,9 +24,6 @@ class HelpPanel : public PanelBase
   // hardcoded scrollable section of display
   const std::vector<std::string> _items;
 
-  // currently selected index; determines oversized display section
-  size_t _scroll_offset;
-
  public:
 
   /* Class constructor.
@@ -36,18 +33,6 @@ class HelpPanel : public PanelBase
   /* Generate complete display from the given fully container ComputationalGraph.
    */
   ActionPacket render(const std::optional<ComputationalGraph>&) override;
-
-  /* Handle 'up' keystroke.
-   */
-  void handle_key_up() override;
-
-  /* Handle 'down' keystroke.
-   */
-  void handle_key_down() override;
-
-  /* Override base class method to reset our IDX counter.
-   */
-  void set_visible(const bool visible) override;
 
 }; // class TestPanel
 

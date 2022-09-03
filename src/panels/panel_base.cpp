@@ -13,8 +13,8 @@
 namespace ros_curses::panels
 {
 
-PanelBase::PanelBase(size_t rows, size_t cols, size_t origin_y, size_t origin_x)
- : _window(newwin(rows, cols, origin_y, origin_x)), _panel(new_panel(_window))
+PanelBase::PanelBase(size_t rows, size_t cols, size_t origin_y, size_t origin_x, bool selectable)
+ : _window(newwin(rows, cols, origin_y, origin_x)), _panel(new_panel(_window)), _scroll(selectable)
 {
   // set common curses parameters for this window
   keypad(_window, true);
@@ -81,6 +81,7 @@ void PanelBase::set_visible(const bool visible)
     show_panel(_panel);
   else
     hide_panel(_panel);
+  _scroll.reset();
   _visible = visible;
 }
 
@@ -101,7 +102,7 @@ void PanelBase::move_and_resize(const size_t rows, const size_t cols, const size
   replace_panel(_panel, _window);
 
   // update scroll region
-  _scroll.update_size(_rows - BORDER * 3);
+  _scroll.resize(_rows - BORDER * 3);
 
   // actually redraw representation
   redraw();

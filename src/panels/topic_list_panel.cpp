@@ -29,32 +29,21 @@ ActionPacket TopicListPanel::render(const std::optional<ComputationalGraph>& gra
   if (topics = graph->topic_list(); topics.size() == 0)
     return NULL_ACTION;
 
-  // check if we can shift to a valid topic
-  size_t topic_idx;
-  if (const auto idx = _scroll.shift(_selection, topics, _shift); !idx)
-    return NULL_ACTION;
-  else
-  {
-    // update selections
-    topic_idx = *idx;
-    _selection = topics[*idx];
-    _shift = 0;
-  }
-
-  // start of the scrollable region (global coordinates)
-  const size_t scroll_start_idx = BORDER;
+  // construct a list of indices for the visible region
+  std::vector<size_t> indices(topics.size());
+  std::iota(indices.begin(), indices.end(), 0);
 
   // get the region bounds
-  const auto [begin, end] = _scroll.range_from_selection(topics.size(), _last_start_idx, topic_idx);
-  _last_start_idx = begin;
+  const auto [begin, end, selection_idx] = _scroll.update(topics, indices, _step, _page);
+  _step = 0; _page = 0;
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-    print_line(scroll_start_idx + i - begin, " - " + topics[i], format(i == topic_idx, !graph->topics().at(topics[i])->active));
+    print_line(BORDER + i - begin, " - " + topics[i], format(i == selection_idx, !graph->topics().at(topics[i])->active));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(topics.size()))
-    print_line_center(scroll_start_idx + end - begin, (end < topics.size()) ? "-- more --" : "-- end --");
+    print_line_center(BORDER + end - begin, (end < topics.size()) ? "-- more --" : "-- end --");
 
   // redraw border, in case it got borked
   draw_border();
@@ -63,17 +52,7 @@ ActionPacket TopicListPanel::render(const std::optional<ComputationalGraph>& gra
   mvwaddnstr(_window, 0, 1, "ROS Topics", _cols - 2 * BORDER);
 
   // indicate we want to display information about this topic
-  return {Action::SELECT_TOPIC, _selection};
-}
-
-void TopicListPanel::set_visible(const bool visible)
-{
-  // reset our selected index
-  _shift = 0;
-  _selection = std::nullopt;
-
-  // call parent method
-  PanelBase::set_visible(visible);
+  return {Action::SELECT_TOPIC, topics[selection_idx]};
 }
 
 } // namespace ros_curses::panels

@@ -18,13 +18,13 @@ class NodeInfoPanel : public PanelBase
 {
  private:
 
-  // last index displayed in our visible region, to implement scrolling hysteresis
-  size_t _last_start_idx {0};
-
   // currently highlighted information
   std::optional<std::pair<std::string, std::string>> _sub_selection;
 
  public:
+
+  // constructor
+  NodeInfoPanel() : PanelBase(true) {}
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */
@@ -33,10 +33,6 @@ class NodeInfoPanel : public PanelBase
   /* Handle 'enter' keystroke.
    */
   virtual ActionPacket handle_enter() override;
-
-  /* Override base class method to reset our state variables.
-   */
-  void set_visible(const bool visible) override;
 
 }; // class NodeInfoPanel
 

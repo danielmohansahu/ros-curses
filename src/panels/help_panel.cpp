@@ -14,7 +14,7 @@ namespace ros_curses::panels
 {
 
 HelpPanel::HelpPanel()
- : _items({
+ : PanelBase(false), _items({
   ""
   " Navigation Commands",
   " -------------------",
@@ -68,25 +68,16 @@ ActionPacket HelpPanel::render(const std::optional<ComputationalGraph>&)
   // completely redraw, to start with a blank slate
   redraw();
 
-  // the start index of our scrolling region (global coordinate frame) is just after the border
-  const size_t scroll_start_idx = BORDER;
+  // get visible indices
+  const auto [begin, end] = _scroll.update(_items.size(), _step, _page);
+  _step = 0; _page = 0;
 
-  // get visible range (local coordinate frame)
-  const auto [begin, end] = _scroll.range_from_start(_items.size(), _scroll_offset);
-  _scroll_offset = begin;
-
-  // iterate through visible section of items
   for (size_t i = begin; i != end; ++i)
-    print_line(scroll_start_idx + i - begin, _items[i]);
+    print_line(BORDER + i - begin, _items[i]);
 
   // add a little blurb at the end if we're scrolling
   if (_scroll.scroll_required(_items.size()))
-  {
-    if (end < _items.size())
-      print_line_center(scroll_start_idx + end - begin, "-- more --");
-    else
-      print_line_center(scroll_start_idx + end - begin, "-- end --");
-  }
+    print_line_center(BORDER + end - begin, (end < _items.size()) ? "-- more --" : "-- end --");
 
   // redraw border, in case our lines overrode them
   draw_border();
@@ -96,24 +87,6 @@ ActionPacket HelpPanel::render(const std::optional<ComputationalGraph>&)
 
   // no user action required
   return NULL_ACTION;
-}
-
-void HelpPanel::handle_key_up()
-{
-  if (_scroll_offset > 0)
-    --_scroll_offset;
-}
-
-void HelpPanel::handle_key_down()
-{
-  ++_scroll_offset;
-}
-
-void HelpPanel::set_visible(const bool visible)
-{
-  // reset our selected index and call parent method
-  _scroll_offset = 0;
-  PanelBase::set_visible(visible);
 }
 
 } // namespace ros_curses::panels

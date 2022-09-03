@@ -13,7 +13,6 @@
 #include "panels/service_list_panel.h"
 #include "panels/param_info_panel.h"
 #include "panels/param_list_panel.h"
-#include "panels/test_panel.h"
 #include "panels/topic_info_panel.h"
 #include "panels/topic_list_panel.h"
 

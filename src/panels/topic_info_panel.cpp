@@ -17,11 +17,11 @@ ActionPacket TopicInfoPanel::render(const std::optional<ComputationalGraph>& gra
   mvwaddnstr(_window, 0, 1, "ROS Topic Summary", _cols - 2 * BORDER);
 
   // if we don't have a graph or topic selected we can't do anything
-  if (!graph || !_selection || graph->topics().find(*_selection) == graph->topics().end())
+  if (!graph || !_external_selection || graph->topics().find(*_external_selection) == graph->topics().end())
     return NULL_ACTION;
   
   // otherwise print some info about this topic
-  const auto& topic = graph->topics().at(*_selection);
+  const auto& topic = graph->topics().at(*_external_selection);
 
   // get a list of all this topic's information as tuples
   std::vector<std::pair<std::string,std::string>> fields;
@@ -32,38 +32,28 @@ ActionPacket TopicInfoPanel::render(const std::optional<ComputationalGraph>& gra
 
   // header information
   size_t current_idx = 1;
-  print_line(current_idx++, *_selection + ((topic->active) ? " (active)" : " (inactive)"));
+  print_line(current_idx++, *_external_selection + ((topic->active) ? " (active)" : " (inactive)"));
   print_line(current_idx++, "  Message Type: " + topic->type);
   print_line(current_idx++, "  Publishers:   " + std::to_string(topic->publishers.size()));
   print_line(current_idx++, "  Subscribers:  " + std::to_string(topic->subscribers.size()));
   print_line(current_idx++, "");
 
-  // check if we can shift to a valid sub-selection
-  size_t highlighted_idx;
-  if (const auto idx = _scroll.shift(_sub_selection, fields, _shift); !idx)
-    return NULL_ACTION;
-  else
-  {
-    // update selections
-    highlighted_idx = *idx;
-    _sub_selection = fields[*idx];
-    _shift = 0;
-  }
+  // construct indices corresponding to all selectable items
+  std::vector<size_t> indices(fields.size());
+  std::iota(indices.begin(), indices.end(), 0);
 
-  // start of the scrollable region (global coordinates)
-  const size_t scroll_start_idx = current_idx;
-
-  // get the region bounds
-  const auto [begin, end] = _scroll.range_from_selection(fields.size(), _last_start_idx, highlighted_idx);
-  _last_start_idx = begin;
+  // get the visible region bounds
+  const auto [begin, end, selection_idx] = _scroll.update(fields, indices, _step, _page);
+  _step = 0; _page = 0;
+  _sub_selection = fields[indices[selection_idx]];
 
   // iterate through visible section of items and print
   for (size_t i = begin; i != end; ++i)
-    print_line(scroll_start_idx + i - begin, fields[i].first + ": " + fields[i].second, format(i == highlighted_idx));
+    print_line(current_idx + i - begin, fields[i].first + ": " + fields[i].second, format(i == selection_idx));
 
   // add a little blurb if we're scrolling
   if (_scroll.scroll_required(fields.size()))
-    print_line_center(scroll_start_idx + end - begin, (end < fields.size()) ? "-- more --" : "-- end --");
+    print_line_center(current_idx + end - begin, (end < fields.size()) ? "-- more --" : "-- end --");
 
   // redraw border and header, in case it got borked
   draw_border();
@@ -81,17 +71,6 @@ ActionPacket TopicInfoPanel::handle_enter()
 
   // switch to selected node
   return {DISPLAY_NODE, _sub_selection->second};
-}
-
-void TopicInfoPanel::set_visible(const bool visible)
-{
-  // reset our selected index
-  _shift = 0;
-  _selection = std::nullopt;
-  _sub_selection = std::nullopt;
-
-  // call parent method
-  PanelBase::set_visible(visible);
 }
 
 } // namespace ros_curses::panels

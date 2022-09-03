@@ -24,7 +24,6 @@ set(SRC_FILES
   src/panels/param_list_panel.cpp
   src/panels/service_info_panel.cpp
   src/panels/service_list_panel.cpp
-  src/panels/test_panel.cpp
   src/panels/topic_info_panel.cpp
   src/panels/topic_list_panel.cpp
   src/computational_graph.cpp

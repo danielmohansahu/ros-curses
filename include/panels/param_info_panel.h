@@ -20,6 +20,9 @@ class ParamInfoPanel : public PanelBase
 
  public:
 
+  // constructor
+  ParamInfoPanel() : PanelBase(true) {}
+
   /* Generate complete display from the given fully container ComputationalGraph.
    */
   ActionPacket render(const std::optional<ComputationalGraph>& graph) override;
