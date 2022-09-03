@@ -192,6 +192,12 @@ ros_curses::Action Display::process_user_input()
     case KEY_DOWN:      // move selection down
       _panels.at(_active)->handle_key_down();
       break;
+    case KEY_PPAGE:     // page selection up
+      _panels.at(_active)->handle_page_up();
+      break;
+    case KEY_NPAGE:     // page selection up
+      _panels.at(_active)->handle_page_down();
+      break;
     case KEY_ENTER:
     case int('\n'):
     case int('\r'):
