@@ -38,6 +38,7 @@ Feature Roadmap:
  - Add struct definitions where applicable (Topics, Services)
  - Intuitive highlighting of common issues (unsubscribed topics, etc.)
  - Add basic Topic panel tools, like an equivalent of `rostopic (hz, bw)`. Not `echo`.
+ - optionally display 'tree' view (i.e. separate namespaces)
 
 
 
