@@ -161,6 +161,10 @@ class ComputationalGraph
    */
   void merge_params(const std::unordered_map<std::string, std::string>& params);
 
+  /* Set the given topic types.
+   */
+  void set_topic_types(const std::vector<std::pair<std::string,std::string>>& types);
+
   /* nodes structure accessor.
    */
   const NodeMap& nodes() const {return _nodes; }

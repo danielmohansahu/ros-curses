@@ -120,7 +120,28 @@ void ComputationalGraph::merge_params(const std::unordered_map<std::string, std:
     element->second->value = value;
     element->second->active = true;
   }
+}
 
+void ComputationalGraph::set_topic_types(const std::vector<std::pair<std::string,std::string>>& types)
+{
+  // set the given topics
+  for (const auto& [topic, type_] : types)
+  {
+    auto element = _topics.find(topic);
+    if (element == _topics.end())
+    {
+      // topic doesn't yet exist - create it
+      const auto& res = _topics.emplace(topic, std::make_shared<Topic>(topic));
+
+      // sanity check that this was inserted
+      assert(res.second);
+      element = res.first;
+    }
+
+    // update the topic type
+    element->second->type = type_;
+    // @TODO what if there's a type mismatch? How to handle?
+  }
 }
 
 } // namespace ros_curses

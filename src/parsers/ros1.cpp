@@ -90,7 +90,17 @@ bool ROS1Parser::get_system_params(ComputationalGraph& graph)
 
 bool ROS1Parser::get_message_types(ComputationalGraph& graph)
 {
-  // I am a stub
+  XmlRpc::XmlRpcValue params, result, payload;
+  params[0] = _name;
+
+  if (!execute("getTopicTypes", params, result, payload))
+    return false;
+
+  // convert result to a vector of string pairs
+  const auto topic_types = xml_to_stl<std::vector<std::pair<std::string,std::string>>>(payload);
+
+  // update this information in the graph
+  graph.set_topic_types(topic_types);
   return true;
 }
 
