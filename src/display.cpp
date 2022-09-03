@@ -178,35 +178,61 @@ ros_curses::Action Display::process_user_input()
   if (!_initialized)
     return (ch == int('q')) ? Action::EXIT : Action::NONE;
 
-  // otherwise, process full suite of commands
+  // otherwise handle navigation commands (valid for all modes)
   switch (ch)
   {
     case ERR:           // no user input; do nothing
-      break;
+      return action;
     case KEY_RESIZE:    // terminal resize event
       resize();
-      break;
+      return action;
     case KEY_UP:        // move selection up
       _panels.at(_active)->handle_key_up();
-      break;
+      return action;
     case KEY_DOWN:      // move selection down
       _panels.at(_active)->handle_key_down();
-      break;
+      return action;
     case KEY_PPAGE:     // page selection up
       _panels.at(_active)->handle_page_up();
-      break;
+      return action;
     case KEY_NPAGE:     // page selection up
       _panels.at(_active)->handle_page_down();
-      break;
+      return action;
     case KEY_ENTER:
     case int('\n'):
     case int('\r'):
       process_action(_panels.at(_active)->handle_enter());
-      break;
+      return action;
     case KEY_LEFT:      // move selection left
     case KEY_RIGHT:     // move selection right
       switch_displays();
+      return action;
+    case int('\t'):     // tab between panel display options
+      cycle_displays();
+      return action;
+    default:
+      // continue allowing evaluation
       break;
+  }
+
+  // if we're in "filter" mode the user can pass through most alpha-numeric
+  //  characters which are normally reserved. Note that this will be cleared
+  //  by certain navigation actions above
+  if (_panels.at(_active)->filtering())
+    switch (ch)
+    {
+      case 27:          // escape - exit filter
+        _panels.at(_active)->clear_filter();
+        return action;
+      default:
+        // pass through
+        _panels.at(_active)->update_filter('0' + ch);
+        return action;
+    }
+
+  // if we're not filtering, allow other alphanumeric commands
+  switch (ch)
+  {
     case int('q'):      // user requested we exit the current screen
       if (_active != PanelNames::HELP)
         return Action::EXIT;
@@ -214,11 +240,9 @@ ros_curses::Action Display::process_user_input()
     case int('?'):      // toggle help screen
       (_active != PanelNames::HELP) ? supersede(PanelNames::HELP, true) : supersede(PanelNames::HELP, false);
       break;
-    case int('\t'):     // tab between panel display options
-      cycle_displays();
-      break;
+    case int('/'):      // start filtering on current panel, if supported
+      _panels.at(_active)->update_filter();
     default:
-      _panels.at(_active)->debug("Unknown command: " + std::to_string(ch));
       break;
   }
 

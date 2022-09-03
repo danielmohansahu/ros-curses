@@ -54,6 +54,9 @@ class PanelBase
   // scrolling calculation helper class
   ScrollRegion _scroll;
 
+  // filtering string, if supported by current display
+  std::optional<std::string> _filter;
+
   // completely redraw this panel, clearing all information
   void redraw();
 
@@ -104,6 +107,22 @@ class PanelBase
   /* Update selection variable; default does nothing.
    */
   virtual void select(const std::optional<std::string>&) {};
+
+  /* Return whether or not we're currently filtering the display.
+   */
+  virtual bool filtering() { return static_cast<bool>(_filter); };
+
+  /* Clear any current filters
+   */
+  virtual void clear_filter()
+  {
+    _filter = std::nullopt;
+    _scroll.resize(_rows - 3 * BORDER);
+  };
+
+  /* Update the current filter; this defaults to doing nothing.
+   */
+  virtual void update_filter([[maybe_unused]] const char& c = '\0') {};
 
   /****************************** Core Panel API *****************************/
 
