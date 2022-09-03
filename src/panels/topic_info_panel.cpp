@@ -10,6 +10,55 @@
 namespace ros_curses::panels
 {
 
+void TopicInfoPanel::construct(const auto& topic,
+                               std::vector<std::string>& full_text,
+                               std::vector<std::pair<ROSType, std::string>>& selectables,
+                               std::vector<size_t>& selectable_indices)
+{
+  // construct full representation of our desired text
+
+  // initialize vectors
+  const size_t selectable_length = topic->publishers.size() + topic->subscribers.size();
+  const size_t length = /*header=*/4 + /*section_headers=*/2 * 2 + selectable_length;
+  selectables.reserve(selectable_length);
+  selectable_indices.reserve(selectable_length);
+  full_text.reserve(length);
+
+  // running tally variables
+  size_t selectable_idx = 0;
+
+  // add fixed header information
+  full_text.emplace_back(*_active_topic + ((topic->active) ? " (active)" : " (inactive)"));
+  full_text.emplace_back("  Message Type: " + topic->type);
+  full_text.emplace_back("  Publishers:   " + std::to_string(topic->publishers.size()));
+  full_text.emplace_back("  Subscribers:  " + std::to_string(topic->subscribers.size()));
+  full_text.emplace_back("");
+  full_text.emplace_back("Publishers:");
+
+  // add selectable items (publihsers)
+  selectable_idx = full_text.size();
+  for (const auto& item : topic->publishers)
+  {
+    selectables.emplace_back(ROSType::PUBLISHER, item);
+    full_text.emplace_back(" " + item);
+    selectable_indices.emplace_back(selectable_idx++);
+  }
+
+  // add sub-header
+  full_text.emplace_back("");
+  full_text.emplace_back("Subscribers:");
+  selectable_idx += 2;
+
+  // add selectable items (subscriptions)
+  for (const auto& item : topic->subscribers)
+  {
+    selectables.emplace_back(ROSType::SUBSCRIBER, item);
+    full_text.emplace_back(" " + item);
+    selectable_indices.emplace_back(selectable_idx++);
+  }
+}
+
+
 ActionPacket TopicInfoPanel::render(const std::optional<ComputationalGraph>& graph)
 {
   // start from a blank slate
@@ -23,36 +72,23 @@ ActionPacket TopicInfoPanel::render(const std::optional<ComputationalGraph>& gra
   // otherwise print some info about this topic
   const auto& topic = graph->topics().at(*_active_topic);
 
-  // get a list of all this topic's information as tuples
-  std::vector<std::pair<std::string,std::string>> fields;
-  for (const auto& pub : topic->publishers)
-    fields.emplace_back("publisher", pub);
-  for (const auto& sub : topic->subscribers)
-    fields.emplace_back("subscriber", sub);
-
-  // header information
-  size_t current_idx = 1;
-  print_line(current_idx++, *_active_topic + ((topic->active) ? " (active)" : " (inactive)"));
-  print_line(current_idx++, "  Message Type: " + topic->type);
-  print_line(current_idx++, "  Publishers:   " + std::to_string(topic->publishers.size()));
-  print_line(current_idx++, "  Subscribers:  " + std::to_string(topic->subscribers.size()));
-  print_line(current_idx++, "");
-
-  // construct indices corresponding to all selectable items
-  std::vector<size_t> indices(fields.size());
-  std::iota(indices.begin(), indices.end(), 0);
+  // construct desired textual representation and metadata
+  std::vector<std::string> full_text;
+  std::vector<std::pair<ROSType, std::string>> selectables;
+  std::vector<size_t> selectable_indices;
+  construct(topic, full_text, selectables, selectable_indices);
 
   // get the visible region bounds
-  const auto [begin, end, selection_idx, highlight_idx] = _scroll.update(fields, indices, fields.size());
-  _sub_selection = fields[selection_idx];
+  const auto [begin, end, selection_idx, highlight_idx] = _scroll.update(selectables, selectable_indices, full_text.size());
+  _sub_selection = selectables[selection_idx];
 
-  // iterate through visible section of items and print
+  // iterate through and display the visible section of text
   for (size_t i = begin; i != end; ++i)
-    print_line(current_idx + i - begin, fields[i].first + ": " + fields[i].second, format(i == highlight_idx));
+    print_line(BORDER + i - begin, full_text[i], format(i == highlight_idx));
 
   // add a little blurb if we're scrolling
-  if (_scroll.scroll_required(fields.size()))
-    print_line_center(current_idx + end - begin, (end < fields.size()) ? "-- more --" : "-- end --");
+  if (_scroll.scroll_required(full_text.size()))
+    print_line_center(BORDER + end - begin, (end < full_text.size()) ? "-- more --" : "-- end --");
 
   // redraw border and header, in case it got borked
   draw_border();

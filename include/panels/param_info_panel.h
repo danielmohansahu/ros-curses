@@ -21,10 +21,18 @@ class ParamInfoPanel : public PanelBase
   // the node we're currently highlighting
   std::optional<std::string> _active_param;
 
+  /* Construct required representations of our desired display.
+   *
+   * Args:
+   *    param: The currently selected parameter, with all ROS primitive information.
+   *    full_text: vector of strings we'll populate with the entirety of our desired display
+   */
+  void construct(const auto& param, std::vector<std::string>& full_text);
+
  public:
 
   // constructor
-  ParamInfoPanel() : PanelBase(true) {}
+  ParamInfoPanel() : PanelBase(false) {}
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */

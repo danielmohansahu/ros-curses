@@ -22,7 +22,20 @@ class ServiceInfoPanel : public PanelBase
   std::optional<std::string> _active_service;
 
   // currently highlighted information
-  std::optional<std::pair<std::string, std::string>> _sub_selection;
+  std::optional<std::pair<ROSType, std::string>> _sub_selection;
+
+  /* Construct required representations of our desired display.
+   *
+   * Args:
+   *    service: The currently selected service, with all ROS primitive information.
+   *    full_text: vector of strings we'll populate with the entirety of our desired display
+   *    selectables: a vector of _unique_ selectable items
+   *    selectable_indices: the corresponding indices of 'selectables' in 'full_text'
+   */
+  void construct(const auto& service,
+                 std::vector<std::string>& full_text,
+                 std::vector<std::pair<ROSType, std::string>>& selectables,
+                 std::vector<size_t>& selectable_indices);
 
  public:
 
