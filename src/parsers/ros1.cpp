@@ -81,7 +81,7 @@ bool ROS1Parser::get_system_params(ComputationalGraph& graph)
     return false;
 
   // convert to map of strings
-  const auto param_map = xml_to_stl<std::unordered_map<std::string,std::string>>(payload);
+  const auto param_map = flatten_params("", payload);
 
   // hand these off to the graph and return success
   graph.merge_params(param_map);
@@ -131,6 +131,43 @@ bool ROS1Parser::execute(const std::string& method, const XmlRpc::XmlRpcValue& r
   return true;
 }
 
+std::unordered_map<std::string, std::string> ROS1Parser::flatten_params(const std::string& ns, XmlRpc::XmlRpcValue xml) const
+{
+  // initialize result
+  std::unordered_map<std::string, std::string> result;
+
+  // handle terminal (primitve) types:
+  if (xml.getType() == XmlRpcValue::TypeString)
+    result.emplace(ns, static_cast<std::string>(xml));
+  else if (xml.getType() == XmlRpcValue::TypeBoolean)
+    result.emplace(ns, std::to_string(static_cast<bool>(xml)));
+  else if (xml.getType() == XmlRpcValue::TypeInt)
+    result.emplace(ns, std::to_string(static_cast<int>(xml)));
+  else if (xml.getType() == XmlRpcValue::TypeDouble)
+    result.emplace(ns, std::to_string(static_cast<double>(xml)));
+  else if (xml.getType() == XmlRpcValue::TypeStruct)
+  {
+    // recurse down, building our map
+    result.reserve(xml.size());
+    for (auto it = xml.begin(); it != xml.end(); ++it)
+      for (auto kv : flatten_params(ns + "/" + static_cast<std::string>(it->first), it->second))
+        result.emplace(kv.first, kv.second);
+  }
+  else if (xml.getType() == XmlRpcValue::TypeArray)
+  {
+    // recurse down, building our map
+    result.reserve(xml.size());
+    for (size_t i = 0; i != xml.size(); ++i)
+      for (auto kv : flatten_params(ns, xml[i]))
+        result.emplace(kv.first, kv.second);
+  }
+  else
+  {
+    // we only expect terminal types or Structs
+    assert(false);
+  }
+  return result;
+}
 
 template <typename T>
 T ROS1Parser::xml_to_stl(XmlRpc::XmlRpcValue xml) const

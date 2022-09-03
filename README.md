@@ -34,12 +34,15 @@ Run the executable via `ros-curses` (or `./ros-curses` if not installed). The GU
 Currently only ROS1 is supported. I've architected things to make adding a ROS2 parser _somewhat_ easy, but some fundamental changes will be needed for representing the computational graph.
 
 Feature Roadmap:
+ - Implement param scrolling.
  - Flesh out "Info" panel displays to show more information (e.g. params in Node namespace)
  - Add struct definitions where applicable (Topics, Services)
  - Intuitive highlighting of common issues (unsubscribed topics, etc.)
  - Add basic Topic panel tools, like an equivalent of `rostopic (hz, bw)`. Not `echo`.
  - optionally display 'tree' view (i.e. separate namespaces)
-
-
-
+ - Default filter out 'get_loggers', 'rosout' / similar metadata services.
+ - Add a TF graph panel
+ - Implement horizontal scrolling on active selection.
+ - Allow backspacing to return to previous configuration.
+ - Make left arrow _only_ go left; same for right.
 
