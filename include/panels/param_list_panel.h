@@ -34,6 +34,22 @@ class ParamListPanel : public PanelBase
    */
   virtual void select(const std::optional<std::string>& selection) override { _scroll.select(selection); };
 
+  /* Update the current filter.
+   */
+  virtual void update_filter(const char& c = '\0') override 
+  {
+    // initialize filter
+    if (!_filter)
+    {
+      _filter = "";
+      _scroll.resize(_rows - BORDER * 4);
+    }
+
+    // @TODO handle special characters (backspace, etc.)
+    if (c != '\0')
+      _filter->push_back(c);
+  };
+
 }; // class ParamListPanel
 
 } // namespace ros_curses::panels

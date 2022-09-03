@@ -103,8 +103,11 @@ void PanelBase::move_and_resize(const size_t rows, const size_t cols, const size
   mvwin(_window, y, x);
   replace_panel(_panel, _window);
 
-  // update scroll region
-  _scroll.resize(_rows - BORDER * 3);
+  // update scroll region (with an extra line if filtering)
+  if (filtering())
+    _scroll.resize(_rows - BORDER * 4);
+  else
+    _scroll.resize(_rows - BORDER * 3);
 
   // actually redraw representation
   redraw();
