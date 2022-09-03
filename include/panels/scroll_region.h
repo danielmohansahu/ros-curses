@@ -99,14 +99,11 @@ class ScrollRegion
 
     // find the index of the current selection
     size_t selection_idx = std::distance(selectables.begin(), std::find(selectables.begin(), selectables.end(), std::any_cast<T>(_selection)));
+    const size_t old_selection_idx = selection_idx;
 
     // check if the user wants to move the selection index
     selection_idx = std::clamp(static_cast<int>(selection_idx) + _step, 0, static_cast<int>(selectables.size()) - 1);
     selection_idx = std::clamp(static_cast<int>(selection_idx) + static_cast<int>(_size) * _page, 0, static_cast<int>(selectables.size()) - 1);
-
-    // update state
-    _step = 0;
-    _page = 0;
     _selection = selectables[selection_idx];
 
     // find the selection index in the full text region
@@ -117,7 +114,18 @@ class ScrollRegion
     {
       // reset starting index
       _start_index = 0;
+      _step = 0;
+      _page = 0;
       return {_start_index, length, selection_idx, required_idx};
+    }
+
+    // check if user requested a step / page that didn't change the current selection
+    // and allow scrolling without changing a selection, as long as it doesn't hide
+    // the required index!
+    if ( (_step != 0 || _page != 0) && (selection_idx == old_selection_idx) )
+    {
+      _start_index = std::clamp(static_cast<int>(_start_index) + _step, 0, static_cast<int>(length - _size));
+      _start_index = std::clamp(static_cast<int>(_start_index) + static_cast<int>(_size) * _page, 0, static_cast<int>(length - _size));
     }
 
     // shift the starting index location until the required index is in view
@@ -128,6 +136,10 @@ class ScrollRegion
       // shift forward to include 'req_idx'
       _start_index += (required_idx - (_start_index + _size - 1));
     // else no shift needed!
+
+    // update state
+    _step = 0;
+    _page = 0;
 
     // return indices
     return {_start_index, _start_index + _size, selection_idx, required_idx};
