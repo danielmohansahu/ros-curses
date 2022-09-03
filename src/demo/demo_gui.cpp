@@ -31,5 +31,5 @@ int main(int argv, char** argc)
 
   // process until shutdown
   while (display.process(mock.poll()) != Action::EXIT)
-    usleep(10000);
+    usleep(1000);
 }
