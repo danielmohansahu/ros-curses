@@ -30,6 +30,13 @@ ActionPacket InitializationPanel::render(const std::optional<ComputationalGraph>
     if (const auto& str = std::string(*evs); str.find("ROS_") != std::string::npos)
       print_line(idx++, "\t" + str);
 
+  // handle case where no information was found
+  if (idx == 5)
+  {
+    print_line(idx++, "\tNo Environment Variables found...");
+    print_line(idx++, "\tSearching for default ROS_MASTER_URI=http://localhost:11311");
+  }
+
   // redraw border (it might've gotten messed up)
   draw_border();
 
