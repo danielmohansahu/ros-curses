@@ -1,7 +1,5 @@
 # ros-curses
 
-`ros_curses` is still in active development, and subject to large changes! Use at your own risk.
-
 `ros-curses` is a command line interface for debugging live [ROS](https://www.ros.org/) applications. It is based on [ncurses](https://en.wikipedia.org/wiki/Ncurses). This project was prompted by the frustration of the author in repeatedly running successive commands like `rostopic info ...`, `rosnode info -q ...`, etc.
 
 ### Installation
@@ -29,20 +27,26 @@ Run the executable via `ros-curses` (or `./ros-curses` if not installed). The GU
 
 ![roscore_example](./docs/roscore_example.gif)
 
+There's also a `demo` which runs with a Mock ROS server as a backend. This highlights the ability of `ros-curses` to capture dynamic state changes, like a `roscore` dying or ROS parameter deletion.
+
+![demo_example](./docs/demo_example.gif)
+
 ### Notes
 
 Currently only ROS1 is supported. I've architected things to make adding a ROS2 parser _somewhat_ easy, but some fundamental changes will be needed for representing the computational graph.
 
 Feature Roadmap:
- - Implement param scrolling.
+ - Implement parameter Info scrolling (non-selectable).
  - Flesh out "Info" panel displays to show more information (e.g. params in Node namespace)
  - Add struct definitions where applicable (Topics, Services)
  - Intuitive highlighting of common issues (unsubscribed topics, etc.)
  - Add basic Topic panel tools, like an equivalent of `rostopic (hz, bw)`. Not `echo`.
+   - is this possible without (a) depending on `roscpp` or (b) writing an xmlrcpp client?
  - optionally display 'tree' view (i.e. separate namespaces)
  - Default filter out 'get_loggers', 'rosout' / similar metadata services.
  - Add a TF graph panel
- - Implement horizontal scrolling on active selection.
+   - is this possible without (a) depending on `roscpp` or (b) writing an xmlrcpp client?
+ - Implement horizontal scrolling on active selection if hovering.
  - Allow backspacing to return to previous configuration.
  - Make left arrow _only_ go left; same for right.
 
