@@ -51,9 +51,6 @@ class PanelBase
   // hardcoded border size
   const uint8_t BORDER {1};
 
-  // string value set externally
-  std::optional<std::string> _external_selection;
-
   // user requested amount to step (sometimes unused)
   int _step {0};
 
@@ -110,9 +107,9 @@ class PanelBase
    */
   virtual ActionPacket handle_enter() { return NULL_ACTION; };
 
-  /* Update selection variable.
+  /* Update selection variable; default does nothing.
    */
-  virtual void select(const std::optional<std::string>& selection) { _external_selection = selection; };
+  virtual void select(const std::optional<std::string>&) {};
 
   /****************************** Core Panel API *****************************/
 

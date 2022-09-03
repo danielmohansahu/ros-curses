@@ -30,6 +30,9 @@ class ParamListPanel : public PanelBase
    */
   ActionPacket render(const std::optional<ComputationalGraph>& graph) override;
 
+  /* Update currently activated item.
+   */
+  virtual void select(const std::optional<std::string>& selection) override { _scroll.select(selection); };
 }; // class ParamListPanel
 
 } // namespace ros_curses::panels

@@ -18,6 +18,9 @@ class ServiceInfoPanel : public PanelBase
 {
  private:
 
+  // the node we're currently highlighting
+  std::optional<std::string> _active_service;
+
   // currently highlighted information
   std::optional<std::pair<std::string, std::string>> _sub_selection;
 
@@ -33,6 +36,10 @@ class ServiceInfoPanel : public PanelBase
   /* Handle 'enter' keystroke.
    */
   virtual ActionPacket handle_enter() override;
+
+  /* Update currently activated service.
+   */
+  virtual void select(const std::optional<std::string>& service) override { _active_service = service; };
 
 }; // class ServiceInfoPanel
 

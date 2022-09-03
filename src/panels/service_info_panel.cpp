@@ -17,11 +17,11 @@ ActionPacket ServiceInfoPanel::render(const std::optional<ComputationalGraph>& g
   mvwaddnstr(_window, 0, 1, "ROS Service Summary", _cols - 2 * BORDER);
 
   // if we don't have a graph or topic selected we can't do anything
-  if (!graph || !_external_selection || graph->services().find(*_external_selection) == graph->services().end())
+  if (!graph || !_active_service || graph->services().find(*_active_service) == graph->services().end())
     return NULL_ACTION;
   
   // otherwise print some info about this topic
-  const auto& service = graph->services().at(*_external_selection);
+  const auto& service = graph->services().at(*_active_service);
 
   // get a list of all this topic's information as tuples
   std::vector<std::pair<std::string,std::string>> fields;
@@ -30,7 +30,7 @@ ActionPacket ServiceInfoPanel::render(const std::optional<ComputationalGraph>& g
 
   // header information
   size_t current_idx = 1;
-  print_line(current_idx++, *_external_selection + ((service->active) ? " (active)" : " (inactive)"));
+  print_line(current_idx++, *_active_service + ((service->active) ? " (active)" : " (inactive)"));
   print_line(current_idx++, "  Message Type: " + service->type);
   print_line(current_idx++, "  Publishers:   " + std::to_string(service->advertisers.size()));
   print_line(current_idx++, "");

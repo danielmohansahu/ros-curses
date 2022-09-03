@@ -18,6 +18,9 @@ class NodeInfoPanel : public PanelBase
 {
  private:
 
+  // the node we're currently highlighting
+  std::optional<std::string> _active_node;
+
   // currently highlighted information
   std::optional<std::pair<std::string, std::string>> _sub_selection;
 
@@ -33,6 +36,10 @@ class NodeInfoPanel : public PanelBase
   /* Handle 'enter' keystroke.
    */
   virtual ActionPacket handle_enter() override;
+
+  /* Update currently activated node.
+   */
+  virtual void select(const std::optional<std::string>& node) override { _active_node = node; };
 
 }; // class NodeInfoPanel
 

@@ -17,11 +17,11 @@ ActionPacket TopicInfoPanel::render(const std::optional<ComputationalGraph>& gra
   mvwaddnstr(_window, 0, 1, "ROS Topic Summary", _cols - 2 * BORDER);
 
   // if we don't have a graph or topic selected we can't do anything
-  if (!graph || !_external_selection || graph->topics().find(*_external_selection) == graph->topics().end())
+  if (!graph || !_active_topic || graph->topics().find(*_active_topic) == graph->topics().end())
     return NULL_ACTION;
   
   // otherwise print some info about this topic
-  const auto& topic = graph->topics().at(*_external_selection);
+  const auto& topic = graph->topics().at(*_active_topic);
 
   // get a list of all this topic's information as tuples
   std::vector<std::pair<std::string,std::string>> fields;
@@ -32,7 +32,7 @@ ActionPacket TopicInfoPanel::render(const std::optional<ComputationalGraph>& gra
 
   // header information
   size_t current_idx = 1;
-  print_line(current_idx++, *_external_selection + ((topic->active) ? " (active)" : " (inactive)"));
+  print_line(current_idx++, *_active_topic + ((topic->active) ? " (active)" : " (inactive)"));
   print_line(current_idx++, "  Message Type: " + topic->type);
   print_line(current_idx++, "  Publishers:   " + std::to_string(topic->publishers.size()));
   print_line(current_idx++, "  Subscribers:  " + std::to_string(topic->subscribers.size()));

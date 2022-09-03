@@ -20,11 +20,11 @@ ActionPacket NodeInfoPanel::render(const std::optional<ComputationalGraph>& grap
   mvwaddnstr(_window, 0, 1, "ROS Node Summary", _cols - 2 * BORDER);
 
   // if we don't have a graph or topic selected we can't do anything
-  if (!graph || !_external_selection || graph->nodes().find(*_external_selection) == graph->nodes().end())
+  if (!graph || !_active_node || graph->nodes().find(*_active_node) == graph->nodes().end())
     return NULL_ACTION;
   
   // otherwise print some info about this topic
-  const auto& node = graph->nodes().at(*_external_selection);
+  const auto& node = graph->nodes().at(*_active_node);
 
   // get a list of all this topic's information as tuples
   std::vector<std::pair<std::string,std::string>> fields;
@@ -39,7 +39,7 @@ ActionPacket NodeInfoPanel::render(const std::optional<ComputationalGraph>& grap
 
   // header information
   size_t current_idx = 1;
-  print_line(current_idx++, *_external_selection + ((node->active) ? " (active)" : " (inactive)"));
+  print_line(current_idx++, *_active_node + ((node->active) ? " (active)" : " (inactive)"));
   print_line(current_idx++, "  Publications:  " + std::to_string(node->publications.size()));
   print_line(current_idx++, "  Subscriptions: " + std::to_string(node->subscriptions.size()));
   print_line(current_idx++, "  Services:      " + std::to_string(node->services.size()));

@@ -51,6 +51,15 @@ class ScrollRegion
   // update our current size
   void resize(const size_t size) { _size = size; }
 
+  // update our currently selected item
+  //  N.B. very weird things will happen if this isn't the right type as used in 'update'...
+  void select(const std::optional<std::string>& selection)
+  {
+    assert(_selectable);
+    if (selection)
+      _selection = *selection;
+  }
+
   // return true if we need to scroll
   bool scroll_required(const size_t length) const { return length > _size; }
 
