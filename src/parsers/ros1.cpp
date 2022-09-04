@@ -11,7 +11,7 @@
 // ros_curses
 #include "parsers/ros1.h"
 
-namespace ros_curses
+namespace ros_curses::ros1
 {
 
 ROS1Parser::ROS1Parser()
@@ -242,4 +242,4 @@ T ROS1Parser::xml_to_stl(XmlRpc::XmlRpcValue xml) const
   }
 }
 
-} // namespace ros_curses
+} // namespace ros_curses::ros1

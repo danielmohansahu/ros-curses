@@ -18,7 +18,7 @@
 // ros_curses
 #include "../computational_graph.h"
 
-namespace ros_curses
+namespace ros_curses::ros1
 {
 
 // convenience type for constexpr assertions
@@ -103,4 +103,4 @@ class ROS1Parser
 
 }; // namespace ROS1Parser
 
-} // namespace ros_curses
+} // namespace ros_curses::ros1

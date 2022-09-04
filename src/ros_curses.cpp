@@ -16,7 +16,7 @@ using namespace ros_curses;
 int main(int argv, char** argc)
 {
   // construct ROS parser
-  ROS1Parser parser {};
+  ros1::ROS1Parser parser {};
 
   // construct basic display class
   auto display = Display();
