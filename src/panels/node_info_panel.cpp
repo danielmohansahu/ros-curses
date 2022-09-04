@@ -145,6 +145,7 @@ ActionPacket NodeInfoPanel::handle_enter()
       return {DISPLAY_PARAM, _sub_selection->second};
     default:
       assert(false);
+      return NULL_ACTION;
   }
 }
 

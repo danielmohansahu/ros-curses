@@ -51,6 +51,7 @@ set(MAIN_FILES
 )
 add_executable(ros-curses ${MAIN_FILES})
 target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES})
+target_compile_options(ros-curses PRIVATE -Wall -Werror -Wpedantic)
 
 # install executable
 install(TARGETS ros-curses DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

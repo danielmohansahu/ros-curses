@@ -62,6 +62,7 @@ int PanelBase::format(const bool selected, const bool zombie) const
 
   // we made a programming mistake if we get here
   assert(false);
+  return A_NORMAL;
 }
 
 void PanelBase::set_active(const bool active)
