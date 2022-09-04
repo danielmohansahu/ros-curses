@@ -64,6 +64,32 @@ bool AnonymousSubscriber::connected() const
 
 bool AnonymousSubscriber::connect()
 {
+  // try to connect to the ROS Master
+  auto master = XMLClientWrapper();
+
+  // attempt to register as a new subscriber
+  XmlRpc::XmlRpcValue args, result, payload;
+  args[0] = "ros_curses";
+  args[1] = _topic;
+  args[2] = "*";
+  args[3] = master.uri();
+
+  if (!master.execute("registerSubscriber", args, result, payload))
+    // failed to register; nothing much we can do...
+    return false;
+
+  // extract list of all publishers
+  const auto publisher_uris = master.xml_to_stl<std::vector<std::string>>(payload);
+
+  // attempt to negotiate a connection with each publisher
+  for (const auto& uri : publisher_uris)
+    // skip the master connection
+    if (uri != master.uri())
+    {
+      // attempt to create a client
+      auto client = XMLClientWrapper(uri);
+    }
+
   // I am a stub
   return false;
 }

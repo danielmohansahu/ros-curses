@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <regex>
 #include <type_traits>
+#include <assert.h>
 
 // XMLRPC
 #include <xmlrpcpp/XmlRpc.h>
@@ -49,15 +50,45 @@ class XMLClientWrapper
   using XmlRpcValue = XmlRpc::XmlRpcValue;
 
   // ROS connection information
-  std::regex _re_master {"^http://(\\w+):([0-9]+)$"};
-  std::string _host {"localhost"};
-  size_t _port {11311};
+  std::regex _re_uri {"^http://(\\w+):([0-9]+)$"};
+
+  // common static information
+  const static inline std::string _default_master_uri {"http://localhost:11311"};
+
+  // our connection information
+  std::string _uri;
+  std::string _host;
+  size_t _port;
 
   // persistent xml client
   std::unique_ptr<XmlRpcClient> _client;
 
+  // convenience method for URI construction
+  inline std::string construct_uri(const std::string& host, const size_t port) const { return "http://" + host + ":" + std::to_string(port); };
+
+  // convenience method for URI extraction
+  bool extract_uri(const std::string& uri, std::string& host, size_t& port) const
+  {
+    if (!std::regex_match(uri, _re_uri))
+      return false;
+    
+    // get rid of the 'http://'
+    std::string tmp = std::string(uri.begin() + 7, uri.end());
+    host = tmp.substr(0, tmp.find(":"));
+    port = std::stoi(tmp.substr(tmp.find(":") + 1, tmp.size()));
+    return true;
+  }
+
  public:
-  XMLClientWrapper();
+  /* Constructor; if the user doesn't provide a URI we'll connect to the ROS Master
+   */
+  explicit XMLClientWrapper(const std::string& uri = "");
+  XMLClientWrapper(const std::string& host, const size_t port) : XMLClientWrapper(construct_uri(host, port)) {};
+
+  // simple accessors
+  std::string uri() const { return _uri; };
+  std::string host() const { return _host; };
+  size_t port() const { return _port; };
 
   /* Execute a call to the XMLRPC server (ROS master)
    * 

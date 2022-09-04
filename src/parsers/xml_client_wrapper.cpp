@@ -6,7 +6,6 @@
 
 // STL
 #include <algorithm>
-#include <assert.h>
 
 // ros_curses
 #include "parsers/xml_client_wrapper.h"
@@ -14,26 +13,26 @@
 namespace ros_curses::ros1
 {
 
-XMLClientWrapper::XMLClientWrapper()
+XMLClientWrapper::XMLClientWrapper(const std::string& uri)
 {
-  // override default host / port information from Master URI, if given
-  if (const char* master_uri = getenv("ROS_MASTER_URI"); master_uri)
+  // check if a URI was provided; otherwise we assume this is a connection to the ROS master
+  if (uri.size() == 0)
   {
-    if (std::string uri = std::string(master_uri); std::regex_match(uri, _re_master))
-    {
-      // get rid of the 'http://'
-      uri = std::string(uri.begin() + 7, uri.end());
-      _host = uri.substr(0, uri.find(":"));
-      _port = std::stoi(uri.substr(uri.find(":") + 1, uri.size()));
-    }
+    // override default host / port information from Master URI, if given
+    if (const char* master_uri = getenv("ROS_MASTER_URI"); master_uri)
+      _uri = std::string(master_uri);
     else
-      throw std::runtime_error("Can't process ROS_MASTER_URI '" + uri + "'; please check for typos.");
+      // otherwise, just use the default ('http://localhost:11311)
+      _uri = _default_master_uri;
   }
+
+  // validate URI and split into host / port pair
+  if (!extract_uri(_uri, _host, _port))
+    throw std::runtime_error("Can't process URI '" + _uri + "'; please check for typos.");
 
   // connect to the core client
   _client = std::make_unique<XmlRpcClient>(_host.c_str(), _port, "/");
 }
-
 bool XMLClientWrapper::execute(const std::string& method, const XmlRpc::XmlRpcValue& request, XmlRpc::XmlRpcValue& response, XmlRpc::XmlRpcValue& payload)
 {
   // execute call

@@ -46,10 +46,10 @@ std::optional<ComputationalGraph> ROS1Parser::get_system_state()
   XmlRpc::XmlRpcValue args, result, payload;
   args[0] = _name;
 
-  if (_client->execute("getSystemState", args, result, payload))
-    return ComputationalGraph(_client->xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[0]),
-                              _client->xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[1]),
-                              _client->xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[2]));
+  if (_master->execute("getSystemState", args, result, payload))
+    return ComputationalGraph(_master->xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[0]),
+                              _master->xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[1]),
+                              _master->xml_to_stl<std::vector<std::pair<std::string,std::vector<std::string>>>>(payload[2]));
   return std::nullopt;
 }
 
@@ -59,7 +59,7 @@ bool ROS1Parser::get_system_params(ComputationalGraph& graph)
   params[0] = _name;
   params[1] = "/";    // root namespace of all parameters
 
-  if (!_client->execute("getParam", params, result, payload))
+  if (!_master->execute("getParam", params, result, payload))
     return false;
 
   // convert to map of strings
@@ -75,11 +75,11 @@ bool ROS1Parser::get_message_types(ComputationalGraph& graph)
   XmlRpc::XmlRpcValue params, result, payload;
   params[0] = _name;
 
-  if (!_client->execute("getTopicTypes", params, result, payload))
+  if (!_master->execute("getTopicTypes", params, result, payload))
     return false;
 
   // convert result to a vector of string pairs
-  const auto topic_types = _client->xml_to_stl<std::vector<std::pair<std::string,std::string>>>(payload);
+  const auto topic_types = _master->xml_to_stl<std::vector<std::pair<std::string,std::string>>>(payload);
 
   // update this information in the graph
   graph.set_topic_types(topic_types);

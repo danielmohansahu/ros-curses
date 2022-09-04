@@ -33,11 +33,11 @@ class ROS1Parser
   // our identifier
   const static inline std::string _name {"ros_curses"};
 
-  // persistent xml client
-  std::unique_ptr<XMLClientWrapper> _client;
+  // persistent xml client to ROS master
+  std::unique_ptr<XMLClientWrapper> _master;
 
  public:
-  ROS1Parser() : _client(new XMLClientWrapper()) {};
+  ROS1Parser() : _master(new XMLClientWrapper()) {};
 
   /* Update our current graph and return rendered CG.
    */

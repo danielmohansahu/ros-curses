@@ -30,6 +30,7 @@ set(SRC_FILES
   src/panels/topic_info_panel.cpp
   src/panels/topic_list_panel.cpp
   src/parsers/anonymous_subscriber.cpp  # @TODO decouple this from non-ROS stuff?
+  src/parsers/xml_client_wrapper.cpp
   src/computational_graph.cpp
   src/display.cpp
   src/ros_curses.cpp
@@ -37,7 +38,7 @@ set(SRC_FILES
 
 add_library(${PROJECT_NAME}_gui STATIC ${SRC_FILES})
 target_include_directories(${PROJECT_NAME}_gui PUBLIC include)
-target_link_libraries(${PROJECT_NAME}_gui ${CURSES_LIBRARIES} ${CURSES_PANELS_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${PROJECT_NAME}_gui ${CURSES_LIBRARIES} ${CURSES_PANELS_LIBRARIES} ${xmlrpcpp_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 target_compile_options(${PROJECT_NAME}_gui PRIVATE -Wall -Werror -Wpedantic -fconcepts)
 
 # demonstration executable for GUI testing
@@ -49,13 +50,11 @@ target_link_libraries(demo ${PROJECT_NAME}_gui)
 
 # core ros-curses executable
 set(MAIN_FILES
-  src/parsers/anonymous_subscriber.cpp
   src/parsers/ros1.cpp
-  src/parsers/xml_client_wrapper.cpp
   src/ros_curses.cpp
 )
 add_executable(ros-curses ${MAIN_FILES})
-target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(ros-curses ${PROJECT_NAME}_gui)
 target_compile_options(ros-curses PRIVATE -Wall -Werror -Wpedantic)
 
 # install executable

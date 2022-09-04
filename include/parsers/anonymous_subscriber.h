@@ -13,6 +13,9 @@
 // XMLRPC
 #include <xmlrpcpp/XmlRpc.h>
 
+// ros_curses
+#include "xml_client_wrapper.h"
+
 namespace ros_curses::ros1
 {
 
