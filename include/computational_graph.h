@@ -85,7 +85,7 @@ class ComputationalGraph
     // construction by name only
     Param() = delete;
     explicit Param(const std::string& name_)
-      : name(name_), namespace_(name_.substr(0, name_.find_last_of('/'))), active(true)
+      : name(name_), namespace_(name_.substr(0, name_.find_last_of('/')))
     {}
 
   }; // struct Param

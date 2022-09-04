@@ -119,6 +119,11 @@ void ComputationalGraph::merge_params(const std::unordered_map<std::string, std:
     // update value and mark as active
     element->second->value = value;
     element->second->active = true;
+
+    // if this param's namespace is a node, link them
+    for (auto& kv : _nodes)
+      if (kv.second->name == element->second->namespace_)
+        kv.second->parameters.insert(name);
   }
 }
 
