@@ -49,9 +49,6 @@ class AnonymousSubscriber
   Statistics _stats;
 
  public:
-  // no default constructor
-  AnonymousSubscriber() = delete;
-
   // shutdown on destruction
   ~AnonymousSubscriber();
 

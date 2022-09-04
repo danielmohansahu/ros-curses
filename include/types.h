@@ -56,7 +56,8 @@ enum ROSType
   PUBLICATION,        // A ROS Publication (topic)
   SUBSCRIPTION,       // A ROS Subscription (topic)
   SERVICE,            // A ROS Service (service)
-  PARAMETER           // A ROS Parameter (param)
+  PARAMETER,          // A ROS Parameter (param)
+  LOCAL_SUBSCRIBER    // A custom one-shot subscriber
 }; // enum ROSType
 
 /* Structure dictating a desired action and required information.

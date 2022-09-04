@@ -8,7 +8,7 @@
 
 // ros_curses
 #include "panel_base.h"
-
+#include "parsers/anonymous_subscriber.h"
 namespace ros_curses::panels
 {
 
@@ -23,6 +23,9 @@ class TopicInfoPanel : public PanelBase
 
   // currently highlighted information
   std::optional<std::pair<ROSType, std::string>> _sub_selection;
+
+  // optional connection to a local subscription
+  std::unique_ptr<ros1::AnonymousSubscriber> _local_subscription;
 
   /* Construct required representations of our desired display.
    *

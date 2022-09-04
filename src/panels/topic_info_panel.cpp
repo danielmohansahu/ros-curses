@@ -19,7 +19,7 @@ void TopicInfoPanel::construct(const auto& topic,
 
   // initialize vectors
   const size_t selectable_length = topic->publishers.size() + topic->subscribers.size();
-  const size_t length = /*header=*/4 + /*section_headers=*/2 * 2 + selectable_length;
+  const size_t length = /*header=*/4 + /*section_headers=*/2 * 2 + /*enable_polling=*/ 3 + selectable_length;
   selectables.reserve(selectable_length);
   selectable_indices.reserve(selectable_length);
   full_text.reserve(length);
@@ -56,8 +56,23 @@ void TopicInfoPanel::construct(const auto& topic,
     full_text.emplace_back(" " + item);
     selectable_indices.emplace_back(selectable_idx++);
   }
-}
 
+  // add sub header for topic polling
+  full_text.emplace_back("");
+  selectables.emplace_back(ROSType::LOCAL_SUBSCRIBER, topic->name);
+  full_text.emplace_back("Toggle 'rostopic hz '" + topic->name + "' " + ((_local_subscription) ? "OFF" : "ON"));
+  selectable_indices.emplace_back(selectable_idx + 1);
+
+  // display rostopic hz info, if available
+  float rate, min, max, stddev;
+  size_t window;
+  if (_local_subscription && _local_subscription->get_statistics(rate, min, max, stddev, window))
+    full_text.emplace_back(" rate: " + std::to_string(rate) + " | min: " + std::to_string(min));
+  else if (_local_subscription)
+    full_text.emplace_back(" Trying to connect...");
+  else
+    full_text.emplace_back(" Disconnected");
+}
 
 ActionPacket TopicInfoPanel::render(const std::optional<ComputationalGraph>& graph)
 {
@@ -104,8 +119,24 @@ ActionPacket TopicInfoPanel::handle_enter()
   if (!_sub_selection)
     return NULL_ACTION;
 
-  // switch to selected node
-  return {DISPLAY_NODE, _sub_selection->second};
+  // handle a switch
+  if (_sub_selection->first == ROSType::PUBLISHER || _sub_selection->first == ROSType::SUBSCRIBER)
+    return {DISPLAY_NODE, _sub_selection->second};
+
+  // check if user requested a local subscription
+  if (_sub_selection->first == ROSType::LOCAL_SUBSCRIBER)
+  {
+    // toggle on or off
+    if (_local_subscription)
+      _local_subscription.reset();
+    else
+      _local_subscription = std::make_unique<ros1::AnonymousSubscriber>("ros_curses_hz");
+    return NULL_ACTION;
+  }
+
+  // no other options... shouldn't get here
+  assert(false);
+  return NULL_ACTION;
 }
 
 } // namespace ros_curses::panels
