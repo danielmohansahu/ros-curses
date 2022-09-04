@@ -46,6 +46,7 @@ target_link_libraries(demo ${PROJECT_NAME}_gui)
 # core ros-curses executable
 set(MAIN_FILES
   src/parsers/ros1.cpp
+  src/parsers/xml_client_wrapper.cpp
   src/ros_curses.cpp
 )
 add_executable(ros-curses ${MAIN_FILES})
