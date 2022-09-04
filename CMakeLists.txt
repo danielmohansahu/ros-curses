@@ -5,6 +5,9 @@ project(ros_curses)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# threading support
+find_package (Threads REQUIRED)
+
 # find curses
 find_package(Curses REQUIRED COMPONENTS)
 find_library(CURSES_PANELS_LIBRARIES libpanel.so libpanelw.so HINTS ${NCURSES_LIBDIR} REQUIRED)
@@ -45,12 +48,14 @@ target_link_libraries(demo ${PROJECT_NAME}_gui)
 
 # core ros-curses executable
 set(MAIN_FILES
+  src/parsers/anonymous_subscriber.cpp
   src/parsers/ros1.cpp
   src/parsers/xml_client_wrapper.cpp
   src/ros_curses.cpp
 )
 add_executable(ros-curses ${MAIN_FILES})
-target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES})
+target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_compile_options(ros-curses PRIVATE -Wall -Werror -Wpedantic)
 
 # install executable
 install(TARGETS ros-curses DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
