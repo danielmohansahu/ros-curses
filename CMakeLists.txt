@@ -12,6 +12,10 @@ find_library(CURSES_PANELS_LIBRARIES libpanel.so libpanelw.so HINTS ${NCURSES_LI
 # XMLRPC for ROS1
 find_package(xmlrpcpp REQUIRED)
 
+# YAMLCPP for saving / loading
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(YAMLCPP REQUIRED yaml-cpp)
+
 # core ros-curses GUI library
 set(SRC_FILES
   src/panels/header_panel.cpp
@@ -33,7 +37,7 @@ set(SRC_FILES
 
 add_library(${PROJECT_NAME}_gui STATIC ${SRC_FILES})
 target_include_directories(${PROJECT_NAME}_gui PUBLIC include)
-target_link_libraries(${PROJECT_NAME}_gui ${CURSES_LIBRARIES} ${CURSES_PANELS_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_gui ${CURSES_LIBRARIES} ${CURSES_PANELS_LIBRARIES} ${YAMLCPP_LIBRARIES})
 target_compile_options(${PROJECT_NAME}_gui PRIVATE -Wall -Werror -Wpedantic -fconcepts)
 
 # demonstration executable for GUI testing
@@ -44,17 +48,21 @@ add_executable(demo ${DEMO_FILES})
 target_link_libraries(demo ${PROJECT_NAME}_gui)
 
 # core ros-curses executable
-set(MAIN_FILES
+set(ROS1_FILES
   src/parsers/ros1.cpp
   src/parsers/xml_client_wrapper.cpp
-  src/ros_curses.cpp
 )
-add_executable(ros-curses ${MAIN_FILES})
+add_executable(ros-curses ${ROS1_FILES} src/ros_curses.cpp)
 target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES})
 target_compile_options(ros-curses PRIVATE -Wall -Werror -Wpedantic)
 
-# install executable
-install(TARGETS ros-curses DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+# utility executables for saving and loading state
+add_executable(save-state ${ROS1_FILES} src/executables/save_state.cpp)
+target_link_libraries(save-state ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES} ${YAMLCPP_LIBRARIES})
+target_compile_options(save-state PRIVATE -Wall -Werror -Wpedantic)
+
+# install executables
+install(TARGETS ros-curses save-state DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # include tests
 # add_subdirectory(tests)

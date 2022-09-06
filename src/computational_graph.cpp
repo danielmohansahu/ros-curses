@@ -1,11 +1,16 @@
 /*
  *
  *
- * 
+ *
  */
 
 // STL
+#include <fstream>
+#include <iostream>
 #include <assert.h>
+
+// YAMLCPP
+#include <yaml-cpp/yaml.h>
 
 // ros_curses
 #include "computational_graph.h"
@@ -147,6 +152,61 @@ void ComputationalGraph::set_topic_types(const std::vector<std::pair<std::string
     element->second->type = type_;
     // @TODO what if there's a type mismatch? How to handle?
   }
+}
+
+bool ComputationalGraph::save(const std::string& filename) const
+{
+  // construct a YAML::Node representation of data
+  YAML::Node config;
+
+  // populate with publishers, subscribers
+  for (const auto& topic : _topics)
+  {
+    for (const auto& pub : topic.second->publishers)
+      if (const auto node = _nodes.find(pub); node != _nodes.end() && node->second->active)
+        config["publishers"].push_back(node->first);
+    for (const auto& sub : topic.second->subscribers)
+      if (const auto node = _nodes.find(sub); node != _nodes.end() && node->second->active)
+        config["subscribers"].push_back(node->first);
+  }
+
+  // populate with services
+  for (const auto& service : _services)
+    for (const auto& adv : service.second->advertisers)
+      if (const auto node = _nodes.find(adv); node != _nodes.end() && node->second->active)
+        config["advertisers"].push_back(node->first);
+
+  // populate with parameters
+  for (const auto& param : _params)
+    config["parameters"][param.first] = param.second->value;
+
+  // try to dump to file
+  std::ofstream ofs(filename.c_str(), std::ofstream::out);
+  if (!ofs)
+    return false;
+
+  ofs << config;
+  return true;
+}
+
+bool ComputationalGraph::load(const std::string& filename)
+{
+  // attempt to load the given file
+  YAML::Node config;
+  try
+  {
+    config = YAML::LoadFile(filename);
+  }
+  catch (const YAML::BadFile& e)
+  {
+    return false;
+  }
+
+  // merge the contents of this file into our data
+
+
+  // I am a stub
+  return false;
 }
 
 } // namespace ros_curses

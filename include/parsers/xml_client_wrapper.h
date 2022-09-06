@@ -1,7 +1,7 @@
 /*
  *
  *
- * 
+ *
  */
 
 #pragma once
@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <regex>
 #include <type_traits>
+#include <assert.h>
 
 // XMLRPC
 #include <xmlrpcpp/XmlRpc.h>
@@ -20,7 +21,7 @@ namespace ros_curses::ros1
 {
 
 // convenience type for constexpr assertions
-template <typename...> inline constexpr bool always_false = false; 
+template <typename...> inline constexpr bool always_false = false;
 
 // default false evaluations for constexpr type handling
 template<typename T> struct is_vector : public std::false_type {};
@@ -60,13 +61,13 @@ class XMLClientWrapper
   XMLClientWrapper();
 
   /* Execute a call to the XMLRPC server (ROS master)
-   * 
+   *
    * Adapted from:
    *  https://github.com/ros/ros_comm/blob/f5fa3a168760d62e9693f10dcb9adfffc6132d22/clients/roscpp/src/libros/master.cpp
    */
   bool execute(const std::string& method, const XmlRpcValue& request, XmlRpcValue& response, XmlRpcValue& payload);
 
-  /* Convert the given XML representation to the STL equivalent. 
+  /* Convert the given XML representation to the STL equivalent.
    */
   template <typename T>
   T xml_to_stl(XmlRpc::XmlRpcValue xml) const
@@ -95,7 +96,7 @@ class XMLClientWrapper
 
       // cast as a pair
       return std::pair(xml_to_stl<typename T::first_type>(xml[0]), xml_to_stl<typename T::second_type>(xml[1]));
-    }  
+    }
     else if constexpr (is_vector<T>::value)
     {
       // vectors are a little more complicated - we can only conver them from TypeArrays

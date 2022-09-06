@@ -7,7 +7,7 @@
 Despite the fact that this tool interfaces with ROS, the number of dependencies are quite light. In addition to `ncurses` we also use [xmlrpc](http://xmlrpc.com/) for ROS querying. To install all required dependencies run the following (or equivalent on your OS):
 
 ```bash
-apt install cmake libxmlrpcpp-dev libncurses-dev
+apt install cmake libxmlrpcpp-dev libncurses-dev libyaml-cpp-dev
 ```
 
 That's it! To build, run the following:

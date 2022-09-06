@@ -1,7 +1,7 @@
 /*
  *
  *
- * 
+ *
  */
 
 #pragma once
@@ -67,7 +67,7 @@ class ComputationalGraph
       // add all new incoming data
       advertisers.insert(other.advertisers.begin(), other.advertisers.end());
       // mark us as "active"
-      active = true;      
+      active = true;
     }
   }; // struct Service
 
@@ -164,6 +164,14 @@ class ComputationalGraph
   /* Set the given topic types.
    */
   void set_topic_types(const std::vector<std::pair<std::string,std::string>>& types);
+
+  /* Save current state to a YAML file.
+   */
+  bool save(const std::string& filename) const;
+
+  /* Load and merge state from a YAML file.
+   */
+  bool load(const std::string& filename);
 
   /* nodes structure accessor.
    */
