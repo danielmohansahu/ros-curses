@@ -1,7 +1,7 @@
 /* ros-curses Command Line debugging of the ROS Computational Graph
  *
- * 
- * 
+ *
+ *
  */
 
 // STL
@@ -13,7 +13,7 @@
 
 using namespace ros_curses;
 
-int main(int argv, char** argc)
+int main(int argc, char** argv)
 {
   // construct ROS parser
   ros1::ROS1Parser parser {};
