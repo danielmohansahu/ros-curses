@@ -37,4 +37,5 @@ int main(int argc, char** argv)
   }
 
   // success!
+  std::cout << "Saved ROS state to " << filename << std::endl;
 }
