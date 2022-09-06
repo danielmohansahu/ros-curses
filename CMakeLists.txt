@@ -56,13 +56,18 @@ add_executable(ros-curses ${ROS1_FILES} src/ros_curses.cpp)
 target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES})
 target_compile_options(ros-curses PRIVATE -Wall -Werror -Wpedantic)
 
-# utility executables for saving and loading state
+# utility executables for saving state
 add_executable(save-state ${ROS1_FILES} src/executables/save_state.cpp)
 target_link_libraries(save-state ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES} ${YAMLCPP_LIBRARIES})
 target_compile_options(save-state PRIVATE -Wall -Werror -Wpedantic)
 
+# utility executables for loading a saved state
+add_executable(load-state ${ROS1_FILES} src/executables/load_state.cpp)
+target_link_libraries(load-state ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES} ${YAMLCPP_LIBRARIES})
+target_compile_options(load-state PRIVATE -Wall -Werror -Wpedantic)
+
 # install executables
-install(TARGETS ros-curses save-state DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS ros-curses save-state load-state DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # include tests
 # add_subdirectory(tests)
