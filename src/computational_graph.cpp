@@ -164,17 +164,17 @@ bool ComputationalGraph::save(const std::string& filename) const
   {
     for (const auto& pub : topic.second->publishers)
       if (const auto node = _nodes.find(pub); node != _nodes.end() && node->second->active)
-        config["publishers"].push_back(node->first);
+        config["publishers"][topic.first].push_back(node->first);
     for (const auto& sub : topic.second->subscribers)
       if (const auto node = _nodes.find(sub); node != _nodes.end() && node->second->active)
-        config["subscribers"].push_back(node->first);
+        config["subscribers"][topic.first].push_back(node->first);
   }
 
   // populate with services
   for (const auto& service : _services)
     for (const auto& adv : service.second->advertisers)
       if (const auto node = _nodes.find(adv); node != _nodes.end() && node->second->active)
-        config["advertisers"].push_back(node->first);
+        config["advertisers"][service.first].push_back(node->first);
 
   // populate with parameters
   for (const auto& param : _params)
@@ -189,7 +189,7 @@ bool ComputationalGraph::save(const std::string& filename) const
   return true;
 }
 
-bool ComputationalGraph::load(const std::string& filename)
+std::optional<ComputationalGraph> ComputationalGraph::load(const std::string& filename)
 {
   // attempt to load the given file
   YAML::Node config;
@@ -199,14 +199,36 @@ bool ComputationalGraph::load(const std::string& filename)
   }
   catch (const YAML::BadFile& e)
   {
-    return false;
+    return std::nullopt;
   }
 
-  // merge the contents of this file into our data
+  // attempt to extract information as a new CG
+  std::vector<std::pair<std::string,std::vector<std::string>>> publishers, subscribers, advertisers;
+  try
+  {
+    for (size_t i = 0; i != config["publishers"].size(); ++i)
+      for (size_t j = 0; j != config["publishers"][i].size(); ++j)
+        publishers.emplace_back(config["publishers"][i].as<std::string>(), config["publishers"][i].as<std::vector<std::string>>());
+    for (size_t i = 0; i != config["subscribers"].size(); ++i)
+      for (size_t j = 0; j != config["subscribers"][i].size(); ++j)
+        subscribers.emplace_back(config["subscribers"][i].as<std::string>(), config["subscribers"][i].as<std::vector<std::string>>());
+    for (size_t i = 0; i != config["advertisers"].size(); ++i)
+      for (size_t j = 0; j != config["advertisers"][i].size(); ++j)
+        advertisers.emplace_back(config["advertisers"][i].as<std::string>(), config["advertisers"][i].as<std::vector<std::string>>());
 
+    // @TODO parameters
+  }
+  catch(const std::exception& e)
+  {
+    // failed to parse
+    return std::nullopt;
+  }
 
-  // I am a stub
-  return false;
+  // create new CG
+  const ComputationalGraph graph(publishers, subscribers, advertisers);
+  // new_graph.merge_params(parameters);
+
+  return graph;
 }
 
 } // namespace ros_curses

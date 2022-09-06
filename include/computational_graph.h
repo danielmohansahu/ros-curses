@@ -13,6 +13,7 @@
 #include <memory>
 #include <unordered_map>
 #include <algorithm>
+#include <optional>
 
 namespace ros_curses
 {
@@ -169,9 +170,9 @@ class ComputationalGraph
    */
   bool save(const std::string& filename) const;
 
-  /* Load and merge state from a YAML file.
+  /* Create a new CG from a saved-state YAML file.
    */
-  bool load(const std::string& filename);
+  static std::optional<ComputationalGraph> load(const std::string& filename);
 
   /* nodes structure accessor.
    */
