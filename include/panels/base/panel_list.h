@@ -24,16 +24,13 @@ class PanelList : public PanelBase
   // title of this list display
   const std::string _title;
 
-  // The type of list we're displaying
-  const ROSType _type;
-
   // The action to perform on selection
   const Action _action;
 
  public:
 
-  PanelList(const std::string& title, const ROSType& type_, const Action& action)
-    : PanelBase(/*selectable=*/true), _title(title), _type(type_), _action(action) {}
+  PanelList(const std::string& title, const Action& action)
+    : PanelBase(/*selectable=*/true), _title(title), _action(action) {}
 
   /* Generate complete display from the given fully container ComputationalGraph.
    */

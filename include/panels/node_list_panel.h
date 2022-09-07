@@ -21,7 +21,7 @@ class NodeListPanel final : public PanelList<ComputationalGraph::Node>
 {
  public:
 
-  NodeListPanel() : PanelList<ComputationalGraph::Node>("ROS Nodes", ROSType::NODE, Action::SELECT_NODE) {};
+  NodeListPanel() : PanelList<ComputationalGraph::Node>("ROS Nodes", Action::SELECT_NODE) {};
 
 }; // class NodeListPanel
 

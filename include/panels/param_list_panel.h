@@ -23,7 +23,7 @@ class ParamListPanel final : public PanelList<ComputationalGraph::Param>
 
  public:
 
-  ParamListPanel() : PanelList<ComputationalGraph::Param>("ROS Params", ROSType::PARAMETER, Action::SELECT_PARAM) {};
+  ParamListPanel() : PanelList<ComputationalGraph::Param>("ROS Params", Action::SELECT_PARAM) {};
 
 }; // class ParamListPanel
 

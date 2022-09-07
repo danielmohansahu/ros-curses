@@ -23,7 +23,7 @@ class ServiceListPanel : public PanelList<ComputationalGraph::Service>
 
  public:
 
-  ServiceListPanel() : PanelList<ComputationalGraph::Service>("ROS Services", ROSType::SERVICE, Action::SELECT_SERVICE) {};
+  ServiceListPanel() : PanelList<ComputationalGraph::Service>("ROS Services", Action::SELECT_SERVICE) {};
 
 }; // class ServiceListPanel
 

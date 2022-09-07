@@ -23,7 +23,7 @@ class TopicListPanel : public PanelList<ComputationalGraph::Topic>
 
  public:
 
-  TopicListPanel() : PanelList<ComputationalGraph::Topic>("ROS Topics", ROSType::TOPIC, Action::SELECT_TOPIC) {};
+  TopicListPanel() : PanelList<ComputationalGraph::Topic>("ROS Topics", Action::SELECT_TOPIC) {};
 
 }; // class TopicListPanel
 
