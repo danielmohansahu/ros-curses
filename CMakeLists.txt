@@ -24,11 +24,8 @@ set(SRC_FILES
   src/panels/initialization_panel.cpp
   src/panels/node_info_panel.cpp
   src/panels/param_info_panel.cpp
-  src/panels/param_list_panel.cpp
   src/panels/service_info_panel.cpp
-  src/panels/service_list_panel.cpp
   src/panels/topic_info_panel.cpp
-  src/panels/topic_list_panel.cpp
   src/computational_graph.cpp
   src/display.cpp
   src/ros_curses.cpp
