@@ -251,6 +251,9 @@ std::optional<ComputationalGraph> ComputationalGraph::load(const std::string& fi
   ComputationalGraph graph(publishers, subscribers, advertisers);
   graph.merge_params(parameters);
 
+  // this graph is _not_ connected
+  graph.set_connected(false);
+
   // done!
   return graph;
 }
