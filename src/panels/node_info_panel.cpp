@@ -1,7 +1,7 @@
 /*
  *
  *
- * 
+ *
  */
 
 // STL
@@ -97,7 +97,7 @@ ActionPacket NodeInfoPanel::render(const std::optional<ComputationalGraph>& grap
   // if we don't have a graph or topic selected we can't do anything
   if (!graph || !_active_node || graph->nodes().find(*_active_node) == graph->nodes().end())
     return NULL_ACTION;
-  
+
   // otherwise print some info about this topic
   const auto& node = graph->nodes().at(*_active_node);
 
@@ -109,7 +109,12 @@ ActionPacket NodeInfoPanel::render(const std::optional<ComputationalGraph>& grap
 
   // get the visible region bounds
   const auto [begin, end, selection_idx, highlight_idx] = _scroll.update(selectables, selectable_indices, full_text.size());
-  _sub_selection = selectables[selection_idx];
+
+  // update selectable region, if we got something valid
+  if (selection_idx < selectables.size())
+    _sub_selection = selectables[selection_idx];
+  else
+    _sub_selection = std::nullopt;
 
   // iterate through and display the visible section of text
   for (size_t i = begin; i != end; ++i)

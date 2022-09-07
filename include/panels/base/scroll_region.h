@@ -1,8 +1,8 @@
 /*
  *
  *
- * 
- * 
+ *
+ *
  */
 
 #pragma once
@@ -68,7 +68,7 @@ class ScrollRegion
 
   // step the current selection / display
   void step(const int step) { _step = step; }
-  
+
   // page the current selection / display
   void page(const int page) { _page = page; }
 
@@ -81,7 +81,7 @@ class ScrollRegion
    *    selectables: Vector of unique selectable items
    *    selectable_indices: The indices of our selectable items in the broader vector (with non-selectable entries)
    *    length: The full size of the desired visible region.
-   * 
+   *
    * Returns:
    *    Tuple containing the start index, end signal, selected index (in 'selectables') and selected index (in [0,length)).
    */
@@ -90,7 +90,16 @@ class ScrollRegion
   {
     // sanity check
     assert(_selectable);
-    assert(selectables.size() > 0);
+
+    // handle edge case if we're given no selectable items
+    if (selectables.size() == 0)
+    {
+      assert(selectable_indices.size() == 0); // better be!
+
+      // just fall back to the trivial non-selectable case
+      const auto [begin,end] = update(length);
+      return {begin, end, 1, length}; // given out-of-bounds indices so nothing gets highlighted
+    }
 
     // find the index of our current selection (or set it to the first element)
     if (!_selection.has_value()
@@ -149,15 +158,12 @@ class ScrollRegion
    *
    * Args:
    *    length: The amount of lines we wish to display.
-   * 
+   *
    * Returns:
    *    Start index and end signal of viewable region.
    */
   std::pair<size_t,size_t> update(const size_t length)
   {
-    // sanity check
-    assert(!_selectable);
-
     // handle trivial case : we have enough space
     if (!scroll_required(length))
     {
