@@ -204,30 +204,54 @@ std::optional<ComputationalGraph> ComputationalGraph::load(const std::string& fi
 
   // attempt to extract information as a new CG
   std::vector<std::pair<std::string,std::vector<std::string>>> publishers, subscribers, advertisers;
+  std::unordered_map<std::string, std::string> parameters;
   try
   {
-    for (size_t i = 0; i != config["publishers"].size(); ++i)
-      for (size_t j = 0; j != config["publishers"][i].size(); ++j)
-        publishers.emplace_back(config["publishers"][i].as<std::string>(), config["publishers"][i].as<std::vector<std::string>>());
-    for (size_t i = 0; i != config["subscribers"].size(); ++i)
-      for (size_t j = 0; j != config["subscribers"][i].size(); ++j)
-        subscribers.emplace_back(config["subscribers"][i].as<std::string>(), config["subscribers"][i].as<std::vector<std::string>>());
-    for (size_t i = 0; i != config["advertisers"].size(); ++i)
-      for (size_t j = 0; j != config["advertisers"][i].size(); ++j)
-        advertisers.emplace_back(config["advertisers"][i].as<std::string>(), config["advertisers"][i].as<std::vector<std::string>>());
+    // load all publishers
+    for (const auto& it : config["publishers"])
+    {
+      const auto topic = it.first.as<std::string>();
+      std::vector<std::string> nodes;
+      for (size_t i = 0; i != it.second.size(); ++i)
+        nodes.emplace_back(it.second[i].as<std::string>());
+      publishers.emplace_back(topic, std::move(nodes));
+    }
 
-    // @TODO parameters
+    // load all subscribers
+    for (const auto& it : config["subscribers"])
+    {
+      const auto topic = it.first.as<std::string>();
+      std::vector<std::string> nodes;
+      for (size_t i = 0; i != it.second.size(); ++i)
+        nodes.emplace_back(it.second[i].as<std::string>());
+      subscribers.emplace_back(topic, std::move(nodes));
+    }
+
+    // load all services
+    for (const auto& it : config["advertisers"])
+    {
+      const auto service = it.first.as<std::string>();
+      std::vector<std::string> nodes;
+      for (size_t i = 0; i != it.second.size(); ++i)
+        nodes.emplace_back(it.second[i].as<std::string>());
+      advertisers.emplace_back(service, std::move(nodes));
+    }
+
+    // load all parameters (_almost_ directly castable, except we use unordered_map)
+    for (const auto& [key, value] : config["parameters"].as<std::map<std::string,std::string>>())
+      parameters.emplace(key,value);
   }
   catch(const std::exception& e)
   {
-    // failed to parse
+    std::cerr << "Failed to parse YAML: \n\t" << e.what() << std::endl;
     return std::nullopt;
   }
 
-  // create new CG
-  const ComputationalGraph graph(publishers, subscribers, advertisers);
-  // new_graph.merge_params(parameters);
+  // create new CG from this topic / node / service / parameter information
+  ComputationalGraph graph(publishers, subscribers, advertisers);
+  graph.merge_params(parameters);
 
+  // done!
   return graph;
 }
 
