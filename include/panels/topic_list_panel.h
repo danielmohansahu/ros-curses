@@ -1,7 +1,7 @@
 /*
  *
  *
- * 
+ *
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 #include <optional>
 
 // ros_curses
-#include "panel_base.h"
+#include "base/panel_base.h"
 
 namespace ros_curses::panels
 {
@@ -36,7 +36,7 @@ class TopicListPanel : public PanelBase
 
   /* Update the current filter.
    */
-  virtual void update_filter(const char& c = '\0') override 
+  virtual void update_filter(const char& c = '\0') override
   {
     // initialize filter
     if (!_filter)

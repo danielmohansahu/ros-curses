@@ -1,7 +1,7 @@
 /*
  *
  *
- * 
+ *
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 #include <optional>
 
 // ros_curses
-#include "panel_base.h"
+#include "base/panel_base.h"
 
 namespace ros_curses::panels
 {

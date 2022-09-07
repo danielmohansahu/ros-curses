@@ -20,7 +20,7 @@
 // ros_curses
 #include "types.h"
 #include "computational_graph.h"
-#include "panels/panel_base.h"
+#include "panels/base/panel_base.h"
 #include "panels/header_panel.h"
 
 namespace ros_curses
