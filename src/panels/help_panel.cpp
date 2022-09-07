@@ -1,7 +1,7 @@
 /*
  *
  *
- * 
+ *
  */
 
 // STL
@@ -15,13 +15,13 @@ namespace ros_curses::panels
 
 HelpPanel::HelpPanel()
  : PanelBase(false), _items({
-  ""
+  "",
   " Navigation Commands",
   " -------------------",
   "          UP : move active display up",
   "        DOWN : move active display down",
   "        PGUP : page active display up",
-  "      PGDOWN : page active display down",  
+  "      PGDOWN : page active display down",
   "        LEFT : switch active display",
   "       RIGHT : switch active display",
   "         TAB : cycle panels",
