@@ -21,6 +21,21 @@ cmake .. && make
 sudo make install
 ```
 
+### Saving and Loading
+
+Several executables are also provided for more convenient offline inspection. One script (`save-state`) will dump the current ROS state to a YAML file for future inspection.
+
+```bash
+# will error out if no ROS instance is detected
+./save-state FILENAME
+```
+
+Then, that state can be interactively analyzed offline at your leisure via `load-state`, which will open the full `curses` GUI loaded with the state saved in the YAML.
+
+```bash
+./load-state FILENAME
+```
+
 ### Execution
 
 Run the executable via `ros-curses` (or `./ros-curses` if not installed). The GUI should appear, and, if you have a live ROS instance running show something like the following:
