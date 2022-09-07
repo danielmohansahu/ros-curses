@@ -1,7 +1,7 @@
 /*
  *
  *
- * 
+ *
  */
 
 #pragma once
@@ -19,8 +19,8 @@
 
 // ros_curses
 #include "scroll_region.h"
-#include "../types.h"
-#include "../computational_graph.h"
+#include "../../types.h"
+#include "../../computational_graph.h"
 
 namespace ros_curses::panels
 {
@@ -28,7 +28,7 @@ namespace ros_curses::panels
 /* Abstract base class for a Panel.
  *
  * This class implements some of the core curses-specific
- * panel / window handling to let child classes focus on 
+ * panel / window handling to let child classes focus on
  * customization.
  */
 class PanelBase

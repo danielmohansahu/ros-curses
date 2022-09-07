@@ -1,14 +1,14 @@
 /*
  *
  *
- * 
+ *
  */
 
 // STL
 #include <assert.h>
 
 // ros_curses
-#include "panels/panel_base.h"
+#include "panels/base/panel_base.h"
 
 namespace ros_curses::panels
 {
