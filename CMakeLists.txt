@@ -28,7 +28,6 @@ set(SRC_FILES
   src/panels/topic_info_panel.cpp
   src/computational_graph.cpp
   src/display.cpp
-  src/ros_curses.cpp
 )
 
 add_library(${PROJECT_NAME}_gui STATIC ${SRC_FILES})
@@ -38,7 +37,7 @@ target_compile_options(${PROJECT_NAME}_gui PRIVATE -Wall -Werror -Wpedantic -fco
 
 # demonstration executable for GUI testing
 set(DEMO_FILES
-  src/demo/demo_gui.cpp
+  src/executables/demo_gui.cpp
 )
 add_executable(demo ${DEMO_FILES})
 target_link_libraries(demo ${PROJECT_NAME}_gui)
@@ -48,7 +47,7 @@ set(ROS1_FILES
   src/parsers/ros1.cpp
   src/parsers/xml_client_wrapper.cpp
 )
-add_executable(ros-curses ${ROS1_FILES} src/ros_curses.cpp)
+add_executable(ros-curses ${ROS1_FILES} src/executables/ros_curses.cpp)
 target_link_libraries(ros-curses ${PROJECT_NAME}_gui ${xmlrpcpp_LIBRARIES})
 target_compile_options(ros-curses PRIVATE -Wall -Werror -Wpedantic)
 
