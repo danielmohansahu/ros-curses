@@ -1,7 +1,7 @@
 /* Common datatypes used throughout the project.
  *
  *
- * 
+ *
  */
 
 #pragma once
@@ -56,7 +56,9 @@ enum ROSType
   PUBLICATION,        // A ROS Publication (topic)
   SUBSCRIPTION,       // A ROS Subscription (topic)
   SERVICE,            // A ROS Service (service)
-  PARAMETER           // A ROS Parameter (param)
+  PARAMETER,          // A ROS Parameter (param)
+  NODE,               // A ROS Node
+  TOPIC               // A ROS Topic
 }; // enum ROSType
 
 /* Structure dictating a desired action and required information.

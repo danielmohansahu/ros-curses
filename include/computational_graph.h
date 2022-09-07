@@ -15,6 +15,9 @@
 #include <algorithm>
 #include <optional>
 
+// convenience type for constexpr assertions
+template <typename...> inline constexpr bool always_false = false;
+
 namespace ros_curses
 {
 
@@ -135,6 +138,9 @@ class ComputationalGraph
   bool _connected {false};
 
  public:
+
+  /************************ Core Construction API ****************************/
+
   /* Construct a new graph from the given ROS status message
    *
    * Args:
@@ -174,6 +180,8 @@ class ComputationalGraph
    */
   static std::optional<ComputationalGraph> load(const std::string& filename);
 
+  /***************************** Accessor API ********************************/
+
   /* nodes structure accessor.
    */
   const NodeMap& nodes() const {return _nodes; }
@@ -190,6 +198,23 @@ class ComputationalGraph
    */
   const ParamMap& params() const {return _params; }
 
+  /* Map access via type.
+   */
+  template <typename T>
+  std::unordered_map<std::string, std::shared_ptr<T>> map() const
+  {
+    if constexpr (std::is_same_v<T, Node>)
+      return nodes();
+    else if constexpr (std::is_same_v<T, Topic>)
+      return topics();
+    else if constexpr (std::is_same_v<T, Service>)
+      return services();
+    else if constexpr (std::is_same_v<T, Param>)
+      return params();
+    else
+      static_assert(always_false<T>, "Invalid Map type requested.");
+  }
+
   /* nodes keys accessor.
    */
   std::vector<std::string> node_list() const { return get_keys(_nodes); };
@@ -205,6 +230,23 @@ class ComputationalGraph
   /* params keys accessor.
    */
   std::vector<std::string> param_list() const { return get_keys(_params); };
+
+  /* Map access via type.
+   */
+  template <typename T>
+  std::vector<std::string> list() const
+  {
+    if constexpr (std::is_same_v<T, Node>)
+      return node_list();
+    else if constexpr (std::is_same_v<T, Topic>)
+      return topic_list();
+    else if constexpr (std::is_same_v<T, Service>)
+      return service_list();
+    else if constexpr (std::is_same_v<T, Param>)
+      return param_list();
+    else
+      static_assert(always_false<T>, "Invalid List type requested.");
+  }
 
  private:
 

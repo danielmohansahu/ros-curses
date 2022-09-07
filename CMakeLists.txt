@@ -18,12 +18,11 @@ pkg_check_modules(YAMLCPP REQUIRED yaml-cpp)
 
 # core ros-curses GUI library
 set(SRC_FILES
+  src/panels/base/panel_base.cpp
   src/panels/header_panel.cpp
   src/panels/help_panel.cpp
   src/panels/initialization_panel.cpp
   src/panels/node_info_panel.cpp
-  src/panels/node_list_panel.cpp
-  src/panels/panel_base.cpp
   src/panels/param_info_panel.cpp
   src/panels/param_list_panel.cpp
   src/panels/service_info_panel.cpp
