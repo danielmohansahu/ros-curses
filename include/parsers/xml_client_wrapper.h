@@ -50,7 +50,7 @@ class XMLClientWrapper
   using XmlRpcValue = XmlRpc::XmlRpcValue;
 
   // ROS connection information
-  std::regex _re_master {"^http://(\\w+):([0-9]+)$"};
+  std::regex _re_master {"^http://([a-zA-Z0-9_.]+):([0-9]+)$"};
   std::string _host {"localhost"};
   size_t _port {11311};
 
